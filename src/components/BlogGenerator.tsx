@@ -3,8 +3,6 @@ import { GoogleGenAI } from '@google/genai';
 import { Loader2, Send, Copy, Check, Code } from 'lucide-react';
 import Markdown from 'react-markdown';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
 export default function BlogGenerator() {
   const [topic, setTopic] = useState('');
   const [keywords, setKeywords] = useState('');
@@ -51,6 +49,7 @@ ${ctaDetail ? `구체적인 행동 유도(CTA): ${ctaDetail}` : ''}
 7. 가장 강조하고 싶은 핵심 문장은 인용구(> 텍스트)를 사용하세요.
 `;
 
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
       const response = await ai.models.generateContentStream({
         model: 'gemini-3.1-pro-preview',
         contents: prompt,

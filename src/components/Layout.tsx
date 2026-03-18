@@ -155,7 +155,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                   <Sparkles className="w-7 h-7 text-white" />
                 </div>
                 <h1 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-emerald-100 to-yellow-100 tracking-tighter drop-shadow-2xl">
-                  혁신 AI Lite
+                  혁신AI Lite
                 </h1>
               </div>
               <p className="text-zinc-300 text-lg md:text-2xl max-w-3xl leading-relaxed font-medium drop-shadow-lg tracking-tight mb-8">
