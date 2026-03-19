@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import { Loader2, Image as ImageIcon, Key, Download } from 'lucide-react';
+import { getApiKey } from '../utils/apiKey';
 
 export default function ImageGenerator() {
   const [topic, setTopic] = useState('');
@@ -56,7 +57,13 @@ export default function ImageGenerator() {
     setImageUrl(null);
     
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
+        setLoading(false);
+        return;
+      }
+      const ai = new GoogleGenAI({ apiKey });
       
       const prompt = `주제: ${topic}
 내용: ${content}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import { Loader2, Video as VideoIcon, Key } from 'lucide-react';
+import { getApiKey } from '../utils/apiKey';
 
 export default function VideoGenerator() {
   const [subject, setSubject] = useState('');
@@ -58,8 +59,13 @@ export default function VideoGenerator() {
     setStatus('비디오 생성 요청 중...');
     
     try {
-      // Re-initialize to pick up the selected API key
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
+        setLoading(false);
+        return;
+      }
+      const ai = new GoogleGenAI({ apiKey });
       
       const fullPrompt = `${subject}가 ${environment}에서 ${action}하는 모습. 카메라 워크: ${cameraMovement}. 조명 및 분위기: ${lighting}. 고품질, 8k 해상도, 사실적인 렌더링.`;
 
@@ -87,7 +93,7 @@ export default function VideoGenerator() {
         const response = await fetch(downloadLink, {
           method: 'GET',
           headers: {
-            'x-goog-api-key': process.env.GEMINI_API_KEY || '',
+            'x-goog-api-key': apiKey,
           },
         });
         

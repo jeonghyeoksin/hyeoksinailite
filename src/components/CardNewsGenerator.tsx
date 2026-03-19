@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
 import { Loader2, Send, Image as ImageIcon } from 'lucide-react';
+import { getApiKey } from '../utils/apiKey';
 
 interface CardPage {
   title: string;
@@ -44,7 +45,13 @@ export default function CardNewsGenerator() {
    [중요] 반드시 다음 형식을 따르세요: "A high quality background image of [배경 묘사]. The visual style MUST be ${designStyle}. The image MUST contain the exact Korean text '[title 내용]' written in large, clear, modern typography. DO NOT include any English text."
 `;
 
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
+        setLoading(false);
+        return;
+      }
+      const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
         model: 'gemini-3.1-pro-preview',
         contents: prompt,
@@ -86,7 +93,13 @@ export default function CardNewsGenerator() {
         const card = updatedCards[i];
         if (card.imageUrl) continue;
 
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        const apiKey = getApiKey();
+        if (!apiKey) {
+          alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
+          setLoadingImages(false);
+          return;
+        }
+        const ai = new GoogleGenAI({ apiKey });
         const response = await ai.models.generateContent({
           model: 'gemini-3.1-flash-image-preview',
           contents: card.imagePrompt,

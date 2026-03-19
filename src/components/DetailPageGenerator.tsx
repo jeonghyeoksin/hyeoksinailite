@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import { Loader2, LayoutTemplate, Download } from 'lucide-react';
+import { getApiKey } from '../utils/apiKey';
 
 export default function DetailPageGenerator() {
   const [productName, setProductName] = useState('');
@@ -20,7 +21,7 @@ export default function DetailPageGenerator() {
     setImageUrl(null);
 
     try {
-      const apiKey = localStorage.getItem('GEMINI_API_KEY') || (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+      const apiKey = getApiKey();
       if (!apiKey) {
         alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
         setLoading(false);

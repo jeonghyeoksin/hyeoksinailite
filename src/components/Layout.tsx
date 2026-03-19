@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { FileText, Image as ImageIcon, Video, LogOut, Sparkles, ImagePlus, Key, LayoutTemplate, ExternalLink } from 'lucide-react';
+import { getApiKey } from '../utils/apiKey';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -23,9 +24,8 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
         const hasKey = await (window as any).aistudio.hasSelectedApiKey();
         setApiKeyStatus(hasKey ? 'applied' : 'missing');
       } else {
-        const localKey = localStorage.getItem('GEMINI_API_KEY');
-        const envKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-        if (localKey || envKey) {
+        const apiKey = getApiKey();
+        if (apiKey) {
           setApiKeyStatus('applied');
         } else {
           setApiKeyStatus('missing');
