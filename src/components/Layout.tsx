@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { FileText, Image as ImageIcon, Video, LogOut, Sparkles, ImagePlus, Key, LayoutTemplate, ExternalLink } from 'lucide-react';
+import { FileText, Image as ImageIcon, Video, LogOut, Sparkles, ImagePlus, Key, LayoutTemplate, ExternalLink, Info, Home } from 'lucide-react';
 import { getApiKey } from '../utils/apiKey';
 
 interface LayoutProps {
@@ -12,7 +12,75 @@ interface LayoutProps {
 export default function Layout({ children, activeTab, setActiveTab }: LayoutProps) {
   const [apiKeyStatus, setApiKeyStatus] = useState<'checking' | 'applied' | 'missing'>('checking');
   const [showApiModal, setShowApiModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   const [tempKey, setTempKey] = useState('');
+
+  const helpContent: Record<string, { title: string, desc: string, steps: string[] }> = {
+    home: {
+      title: '혁신AI Lite 홈',
+      desc: '혁신AI Lite의 전체 기능을 한눈에 확인하고 이동할 수 있는 대시보드입니다.',
+      steps: [
+        '좌측 메뉴 또는 화면의 카드를 클릭하여 원하는 생성 기능으로 이동하세요.',
+        '모든 기능은 우측 상단의 "Google API KEY 설정"이 완료되어야 정상 작동합니다.',
+        '각 기능 화면에서 "사용방법" 버튼을 누르면 상세한 안내를 볼 수 있습니다.'
+      ]
+    },
+    blog: {
+      title: '블로그 생성 사용방법',
+      desc: 'SEO에 최적화된 전문적인 블로그 포스트를 손쉽게 작성해보세요.',
+      steps: [
+        '작성하고자 하는 블로그의 핵심 주제를 입력합니다.',
+        '우측 상단의 "✨ AI 자동 기획" 버튼을 누르면 타겟 독자, 목적, 어조 등이 자동으로 추천됩니다.',
+        '필요에 따라 상호명, 아이템명, 구체적인 CTA(행동 유도)를 추가로 입력합니다.',
+        '"블로그 작성하기" 버튼을 누르면 마크다운 형식의 깔끔한 포스팅이 생성됩니다.',
+        '결과물 우측 상단의 "복사하기"를 눌러 블로그에 바로 붙여넣기 하세요.'
+      ]
+    },
+    cardnews: {
+      title: '카드뉴스 생성 사용방법',
+      desc: '인스타그램, 페이스북 등 SNS에 올릴 매력적인 카드뉴스를 기획하고 디자인합니다.',
+      steps: [
+        '카드뉴스의 메인 주제를 입력합니다.',
+        '"✨ AI 자동 기획" 버튼을 눌러 타겟 독자와 톤앤매너, 디자인 스타일을 자동 설정합니다.',
+        '원하는 장수(3~8장)와 비율을 선택한 후 "텍스트 생성"을 누릅니다.',
+        '각 장에 들어갈 제목, 내용, 이미지 프롬프트가 기획되어 나타납니다.',
+        '기획안이 마음에 들면 "배경 이미지 생성하기"를 눌러 각 장에 어울리는 고품질 이미지를 생성하세요.'
+      ]
+    },
+    image: {
+      title: '이미지 생성 사용방법',
+      desc: '나노바나나2 모델을 활용하여 한국어 텍스트가 포함된 고품질 이미지를 생성합니다.',
+      steps: [
+        '생성하고 싶은 이미지의 주제를 입력합니다.',
+        '"✨ AI 자동 기획" 버튼을 누르면 화풍, 색감, 분위기, 조명 등이 주제에 맞게 자동 설정됩니다.',
+        '내용 란에 이미지 안에 포함하고 싶은 구체적인 묘사나 "한국어 텍스트"를 적어주세요.',
+        '비율(정방형 또는 가로형)을 선택하고 "이미지 생성하기"를 누릅니다.',
+        '생성된 이미지 우측 하단의 다운로드 버튼을 눌러 이미지를 저장하세요.'
+      ]
+    },
+    video: {
+      title: '동영상 생성 사용방법',
+      desc: 'Veo 모델을 사용하여 프롬프트 기반의 고품질 짧은 동영상을 생성합니다.',
+      steps: [
+        '영상에 등장할 메인 주제나 피사체를 입력합니다.',
+        '"✨ AI 자동 기획" 버튼을 누르면 피사체에 어울리는 동작, 배경, 카메라 워크, 조명이 자동 설정됩니다.',
+        '세부적인 움직임이나 환경을 직접 수정할 수도 있습니다.',
+        '원하는 비율을 선택하고 "동영상 생성하기"를 누릅니다.',
+        '동영상 생성은 모델 특성상 몇 분 정도 소요될 수 있습니다. 완료 후 다운로드 가능합니다.'
+      ]
+    },
+    detailpage: {
+      title: '상세페이지 생성 사용방법',
+      desc: '이커머스 및 랜딩페이지용 상세페이지 이미지를 통째로 디자인합니다.',
+      steps: [
+        '제품/서비스명과 카테고리(주제)를 입력합니다.',
+        '"✨ AI 자동 기획" 버튼을 누르면 타겟 고객, 핵심 소구점, 레이아웃, 메인 색상이 자동 기획됩니다.',
+        '원하는 상세페이지 장수와 비율(1:4 또는 1:8)을 선택합니다.',
+        '"상세페이지 생성하기"를 누르면 한국어 타이포그래피가 깨지지 않고 세련되게 배치된 긴 이미지가 생성됩니다.',
+        '생성 완료 후 하단의 다운로드 버튼을 통해 이미지를 저장하세요.'
+      ]
+    }
+  };
 
   useEffect(() => {
     checkApiKeyStatus();
@@ -37,6 +105,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
   };
 
   const tabs = [
+    { id: 'home', label: '홈', icon: Home },
     { id: 'blog', label: '블로그 생성', icon: FileText },
     { id: 'cardnews', label: '카드뉴스 생성', icon: ImageIcon },
     { id: 'image', label: '이미지 생성', icon: ImagePlus },
@@ -138,6 +207,14 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
             </div>
 
             <button
+              onClick={() => setShowHelpModal(true)}
+              className="group flex items-center gap-2.5 px-5 py-2.5 bg-zinc-900/60 hover:bg-zinc-800/80 backdrop-blur-xl border border-white/10 hover:border-blue-500/50 rounded-full text-sm font-semibold text-zinc-300 hover:text-white transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(59,130,246,0.2)]"
+            >
+              <Info className="w-4 h-4 text-blue-400 group-hover:text-blue-300 transition-colors" />
+              <span className="tracking-wide">사용방법</span>
+            </button>
+
+            <button
               onClick={handleApiKeyClick}
               className="group flex items-center gap-2.5 px-5 py-2.5 bg-zinc-900/60 hover:bg-zinc-800/80 backdrop-blur-xl border border-white/10 hover:border-purple-500/50 rounded-full text-sm font-semibold text-zinc-300 hover:text-white transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(168,85,247,0.2)]"
             >
@@ -159,7 +236,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 </h1>
               </div>
               <p className="text-zinc-300 text-lg md:text-2xl max-w-3xl leading-relaxed font-medium drop-shadow-lg tracking-tight mb-8">
-                혁신AI의 기본기능을 체험해볼 수 있습니다. 고급기능은 혁신AI 프리미엄멤버십 신청시 사용가능합니다.
+                혁신AI의 기본기능을 체험해볼 수 있습니다. <br /> 고급기능은 혁신AI 프리미엄멤버십 신청시 사용가능합니다.
               </p>
               <a
                 href="https://hyeoksinai.com"
@@ -225,6 +302,44 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 적용하기
               </button>
             </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Help Modal */}
+      {showHelpModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 max-w-lg w-full shadow-[0_0_50px_rgba(59,130,246,0.15)] relative overflow-hidden"
+          >
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-emerald-500"></div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center border border-blue-500/30">
+                <Info className="w-5 h-5 text-blue-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-white">{helpContent[activeTab]?.title}</h3>
+            </div>
+            <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
+              {helpContent[activeTab]?.desc}
+            </p>
+            <div className="space-y-4 mb-8">
+              {helpContent[activeTab]?.steps.map((step, idx) => (
+                <div key={idx} className="flex gap-3">
+                  <div className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-xs font-bold text-blue-400">{idx + 1}</span>
+                  </div>
+                  <p className="text-zinc-300 text-sm leading-relaxed">{step}</p>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => setShowHelpModal(false)}
+              className="w-full py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold transition-all border border-white/10"
+            >
+              확인
+            </button>
           </motion.div>
         </div>
       )}

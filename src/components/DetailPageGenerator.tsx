@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { GoogleGenAI } from '@google/genai';
-import { Loader2, LayoutTemplate, Download } from 'lucide-react';
+import { GoogleGenAI, Type } from '@google/genai';
+import { Loader2, LayoutTemplate, Download, Sparkles } from 'lucide-react';
 import { getApiKey } from '../utils/apiKey';
 
 export default function DetailPageGenerator() {
@@ -13,7 +13,52 @@ export default function DetailPageGenerator() {
   const [aspectRatio, setAspectRatio] = useState<'1:4' | '1:8'>('1:4');
   const [pageCount, setPageCount] = useState('Auto');
   const [loading, setLoading] = useState(false);
+  const [isAutoPlanning, setIsAutoPlanning] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  const handleAutoPlan = async () => {
+    if (!productName || !topic) {
+      alert('제품/서비스명과 카테고리/주제를 먼저 입력해주세요.');
+      return;
+    }
+    setIsAutoPlanning(true);
+    try {
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
+        setIsAutoPlanning(false);
+        return;
+      }
+      const ai = new GoogleGenAI({ apiKey });
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.1-flash-preview',
+        contents: `제품/서비스명 "${productName}", 카테고리/주제 "${topic}"에 대한 상세페이지 기획을 작성해주세요.`,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              targetAudience: { type: Type.STRING, description: "구체적인 타겟 고객층" },
+              keyPoints: { type: Type.STRING, description: "핵심 소구점 (특장점) 3~4가지를 1. 2. 3. 형식으로 작성" },
+              layoutStyle: { type: Type.STRING, description: "다음 중 하나 선택: 문제제기 -> 해결책 -> 특장점 -> 리뷰 -> CTA, 감성 스토리텔링 -> 제품 스펙 -> 혜택 -> CTA, 강렬한 후킹 -> 비포/애프터 -> 상세 스펙 -> CTA, 브랜드 철학 -> 제품 라인업 -> 디테일 컷 -> CTA" },
+              colorPalette: { type: Type.STRING, description: "다음 중 하나 선택: 신뢰감을 주는 블루 톤 (Trust Blue), 고급스러운 블랙 & 골드 (Luxury Black & Gold), 따뜻하고 감성적인 베이지/파스텔 (Warm Pastel), 신선하고 활기찬 그린/오렌지 (Fresh & Energetic), 트렌디한 퍼플/네온 (Trendy Neon)" }
+            },
+            required: ["targetAudience", "keyPoints", "layoutStyle", "colorPalette"]
+          }
+        }
+      });
+      const data = JSON.parse(response.text || '{}');
+      if (data.targetAudience) setTargetAudience(data.targetAudience);
+      if (data.keyPoints) setKeyPoints(data.keyPoints);
+      if (data.layoutStyle) setLayoutStyle(data.layoutStyle);
+      if (data.colorPalette) setColorPalette(data.colorPalette);
+    } catch (error) {
+      console.error('Error auto planning:', error);
+      alert('자동 기획 중 오류가 발생했습니다.');
+    } finally {
+      setIsAutoPlanning(false);
+    }
+  };
 
   const handleGenerate = async () => {
     if (!productName || !topic) return;
@@ -98,7 +143,17 @@ export default function DetailPageGenerator() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">카테고리/주제 <span className="text-red-400">*</span></label>
+            <div className="flex justify-between items-end mb-2">
+              <label className="block text-sm font-medium text-zinc-300">카테고리/주제 <span className="text-red-400">*</span></label>
+              <button
+                onClick={handleAutoPlan}
+                disabled={isAutoPlanning || !productName || !topic}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+              >
+                {isAutoPlanning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                AI 자동 기획
+              </button>
+            </div>
             <input
               type="text"
               value={topic}

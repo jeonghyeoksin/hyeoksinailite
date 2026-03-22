@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { GoogleGenAI } from '@google/genai';
-import { Loader2, Send, Copy, Check, Code } from 'lucide-react';
+import { GoogleGenAI, Type } from '@google/genai';
+import { Loader2, Send, Copy, Check, Code, Sparkles } from 'lucide-react';
 import Markdown from 'react-markdown';
 
 import { getApiKey } from '../utils/apiKey';
@@ -17,10 +17,57 @@ export default function BlogGenerator() {
   const [ctaDetail, setCtaDetail] = useState('');
   
   const [loading, setLoading] = useState(false);
+  const [isAutoPlanning, setIsAutoPlanning] = useState(false);
   const [result, setResult] = useState('');
   const [copiedText, setCopiedText] = useState(false);
   
   const markdownRef = useRef<HTMLDivElement>(null);
+
+  const handleAutoPlan = async () => {
+    if (!topic) {
+      alert('주제를 먼저 입력해주세요.');
+      return;
+    }
+    setIsAutoPlanning(true);
+    try {
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
+        setIsAutoPlanning(false);
+        return;
+      }
+      const ai = new GoogleGenAI({ apiKey });
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.1-flash-preview',
+        contents: `주제 "${topic}"에 대한 블로그 포스팅 기획을 작성해주세요.`,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              keywords: { type: Type.STRING, description: "쉼표로 구분된 핵심 키워드 3~5개" },
+              targetAudience: { type: Type.STRING, description: "구체적인 타겟 독자층" },
+              purpose: { type: Type.STRING, description: "다음 중 하나 선택: 정보 전달 및 교육, 제품/서비스 홍보, 브랜딩 및 신뢰 구축, 트래픽 유도 (SEO), 고객 설득 및 전환" },
+              tone: { type: Type.STRING, description: "다음 중 하나 선택: 전문적이고 신뢰감 있는, 친근하고 소통하는, 유머러스하고 재치있는, 감성적이고 따뜻한, 강력하고 설득력 있는" },
+              ctaDetail: { type: Type.STRING, description: "독자의 행동을 유도할 구체적인 문구 (예: 무료 상담 신청하기)" }
+            },
+            required: ["keywords", "targetAudience", "purpose", "tone", "ctaDetail"]
+          }
+        }
+      });
+      const data = JSON.parse(response.text || '{}');
+      if (data.keywords) setKeywords(data.keywords);
+      if (data.targetAudience) setTargetAudience(data.targetAudience);
+      if (data.purpose) setPurpose(data.purpose);
+      if (data.tone) setTone(data.tone);
+      if (data.ctaDetail) setCtaDetail(data.ctaDetail);
+    } catch (error) {
+      console.error('Error auto planning:', error);
+      alert('자동 기획 중 오류가 발생했습니다.');
+    } finally {
+      setIsAutoPlanning(false);
+    }
+  };
 
   const handleGenerate = async () => {
     if (!topic) return;
@@ -129,7 +176,17 @@ ${ctaDetail ? `구체적인 행동 유도(CTA): ${ctaDetail}` : ''}
         {/* Input Section */}
         <div className="lg:col-span-1 space-y-5 bg-zinc-900/50 border border-white/10 p-6 rounded-3xl h-fit max-h-[800px] overflow-y-auto custom-scrollbar">
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">주제 <span className="text-red-400">*</span></label>
+            <div className="flex justify-between items-end mb-2">
+              <label className="block text-sm font-medium text-zinc-300">주제 <span className="text-red-400">*</span></label>
+              <button
+                onClick={handleAutoPlan}
+                disabled={isAutoPlanning || !topic}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+              >
+                {isAutoPlanning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                AI 자동 기획
+              </button>
+            </div>
             <input
               type="text"
               value={topic}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleGenAI } from '@google/genai';
-import { Loader2, Image as ImageIcon, Key, Download } from 'lucide-react';
+import { GoogleGenAI, Type } from '@google/genai';
+import { Loader2, Image as ImageIcon, Key, Download, Sparkles } from 'lucide-react';
 import { getApiKey } from '../utils/apiKey';
 
 export default function ImageGenerator() {
@@ -12,6 +12,7 @@ export default function ImageGenerator() {
   const [lighting, setLighting] = useState('자연광 (Natural Light)');
   const [aspectRatio, setAspectRatio] = useState<'1:1' | '16:9'>('1:1');
   const [loading, setLoading] = useState(false);
+  const [isAutoPlanning, setIsAutoPlanning] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [hasKey, setHasKey] = useState(false);
   const [checkingKey, setCheckingKey] = useState(true);
@@ -48,6 +49,52 @@ export default function ImageGenerator() {
       }
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const handleAutoPlan = async () => {
+    if (!topic) {
+      alert('주제를 먼저 입력해주세요.');
+      return;
+    }
+    setIsAutoPlanning(true);
+    try {
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
+        setIsAutoPlanning(false);
+        return;
+      }
+      const ai = new GoogleGenAI({ apiKey });
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.1-flash-preview',
+        contents: `주제 "${topic}"에 어울리는 이미지 생성을 위한 프롬프트 기획을 작성해주세요.`,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              content: { type: Type.STRING, description: "이미지에 들어갈 구체적인 묘사 및 텍스트 내용" },
+              artStyle: { type: Type.STRING, description: "다음 중 하나 선택: 실사 (Photorealistic), 3D 렌더링 (3D Render), 일러스트레이션 (Illustration), 수채화 (Watercolor), 사이버펑크 (Cyberpunk), 애니메이션 (Anime)" },
+              colorPalette: { type: Type.STRING, description: "다음 중 하나 선택: 선명하고 다채로운 (Vibrant & Colorful), 파스텔 톤 (Pastel Tones), 어둡고 무거운 (Dark & Moody), 네온 컬러 (Neon Colors), 흑백 (Black & White), 따뜻한 웜톤 (Warm Tones)" },
+              mood: { type: Type.STRING, description: "다음 중 하나 선택: 밝고 긍정적인 (Bright & Positive), 몽환적인 (Dreamy & Ethereal), 역동적인 (Dynamic & Energetic), 차분하고 평화로운 (Calm & Peaceful), 신비로운 (Mysterious)" },
+              lighting: { type: Type.STRING, description: "다음 중 하나 선택: 자연광 (Natural Light), 시네마틱 조명 (Cinematic Lighting), 스튜디오 조명 (Studio Lighting), 드라마틱한 역광 (Dramatic Backlight), 부드러운 확산광 (Soft Diffused Light)" }
+            },
+            required: ["content", "artStyle", "colorPalette", "mood", "lighting"]
+          }
+        }
+      });
+      const data = JSON.parse(response.text || '{}');
+      if (data.content) setContent(data.content);
+      if (data.artStyle) setArtStyle(data.artStyle);
+      if (data.colorPalette) setColorPalette(data.colorPalette);
+      if (data.mood) setMood(data.mood);
+      if (data.lighting) setLighting(data.lighting);
+    } catch (error) {
+      console.error('Error auto planning:', error);
+      alert('자동 기획 중 오류가 발생했습니다.');
+    } finally {
+      setIsAutoPlanning(false);
     }
   };
 
@@ -148,7 +195,17 @@ export default function ImageGenerator() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1 space-y-5 bg-zinc-900/50 border border-white/10 p-6 rounded-3xl h-fit max-h-[800px] overflow-y-auto custom-scrollbar">
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">주제 <span className="text-red-400">*</span></label>
+            <div className="flex justify-between items-end mb-2">
+              <label className="block text-sm font-medium text-zinc-300">주제 <span className="text-red-400">*</span></label>
+              <button
+                onClick={handleAutoPlan}
+                disabled={isAutoPlanning || !topic}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+              >
+                {isAutoPlanning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                AI 자동 기획
+              </button>
+            </div>
             <input
               type="text"
               value={topic}

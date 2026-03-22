@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
-import { Loader2, Send, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Send, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { getApiKey } from '../utils/apiKey';
 
 interface CardPage {
@@ -19,8 +19,53 @@ export default function CardNewsGenerator() {
   const [pageCount, setPageCount] = useState(5);
   const [aspectRatio, setAspectRatio] = useState<'1:1' | '3:4'>('1:1');
   const [loading, setLoading] = useState(false);
+  const [isAutoPlanning, setIsAutoPlanning] = useState(false);
   const [loadingImages, setLoadingImages] = useState(false);
   const [cards, setCards] = useState<CardPage[]>([]);
+
+  const handleAutoPlan = async () => {
+    if (!topic) {
+      alert('주제를 먼저 입력해주세요.');
+      return;
+    }
+    setIsAutoPlanning(true);
+    try {
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
+        setIsAutoPlanning(false);
+        return;
+      }
+      const ai = new GoogleGenAI({ apiKey });
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.1-flash-preview',
+        contents: `주제 "${topic}"에 대한 카드뉴스 기획을 작성해주세요.`,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              content: { type: Type.STRING, description: "카드뉴스에 들어갈 핵심 내용 요약" },
+              targetAudience: { type: Type.STRING, description: "구체적인 타겟 독자층" },
+              toneAndManner: { type: Type.STRING, description: "다음 중 하나 선택: 트렌디하고 감각적인, 진지하고 전문적인, 친근하고 발랄한, 감성적이고 따뜻한, 유머러스하고 재치있는" },
+              designStyle: { type: Type.STRING, description: "다음 중 하나 선택: 미니멀하고 깔끔한 (Minimal & Clean), 화려하고 다채로운 (Colorful & Vibrant), 감성적인 사진 위주 (Cinematic Photography), 3D 일러스트레이션 (3D Illustration), 사이버펑크/네온 (Cyberpunk/Neon)" }
+            },
+            required: ["content", "targetAudience", "toneAndManner", "designStyle"]
+          }
+        }
+      });
+      const data = JSON.parse(response.text || '{}');
+      if (data.content) setContent(data.content);
+      if (data.targetAudience) setTargetAudience(data.targetAudience);
+      if (data.toneAndManner) setToneAndManner(data.toneAndManner);
+      if (data.designStyle) setDesignStyle(data.designStyle);
+    } catch (error) {
+      console.error('Error auto planning:', error);
+      alert('자동 기획 중 오류가 발생했습니다.');
+    } finally {
+      setIsAutoPlanning(false);
+    }
+  };
 
   const handleGenerateText = async () => {
     if (!topic) return;
@@ -138,7 +183,17 @@ export default function CardNewsGenerator() {
       <div className="bg-zinc-900/50 border border-white/10 p-6 rounded-3xl space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">주제 <span className="text-red-400">*</span></label>
+            <div className="flex justify-between items-end mb-2">
+              <label className="block text-sm font-medium text-zinc-300">주제 <span className="text-red-400">*</span></label>
+              <button
+                onClick={handleAutoPlan}
+                disabled={isAutoPlanning || !topic}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+              >
+                {isAutoPlanning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                AI 자동 기획
+              </button>
+            </div>
             <input
               type="text"
               value={topic}

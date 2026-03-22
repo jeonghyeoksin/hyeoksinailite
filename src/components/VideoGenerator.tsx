@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleGenAI } from '@google/genai';
-import { Loader2, Video as VideoIcon, Key } from 'lucide-react';
+import { GoogleGenAI, Type } from '@google/genai';
+import { Loader2, Video as VideoIcon, Key, Sparkles } from 'lucide-react';
 import { getApiKey } from '../utils/apiKey';
 
 export default function VideoGenerator() {
@@ -11,6 +11,7 @@ export default function VideoGenerator() {
   const [lighting, setLighting] = useState('시네마틱 조명 (Cinematic Lighting)');
   const [aspectRatio, setAspectRatio] = useState<'16:9' | '9:16'>('16:9');
   const [loading, setLoading] = useState(false);
+  const [isAutoPlanning, setIsAutoPlanning] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [status, setStatus] = useState('');
   const [hasKey, setHasKey] = useState(false);
@@ -49,6 +50,50 @@ export default function VideoGenerator() {
       }
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const handleAutoPlan = async () => {
+    if (!subject) {
+      alert('주제/피사체를 먼저 입력해주세요.');
+      return;
+    }
+    setIsAutoPlanning(true);
+    try {
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
+        setIsAutoPlanning(false);
+        return;
+      }
+      const ai = new GoogleGenAI({ apiKey });
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.1-flash-preview',
+        contents: `주제/피사체 "${subject}"에 어울리는 동영상 생성을 위한 프롬프트 기획을 작성해주세요.`,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              action: { type: Type.STRING, description: "동작/움직임 묘사" },
+              environment: { type: Type.STRING, description: "배경/환경 묘사" },
+              cameraMovement: { type: Type.STRING, description: "다음 중 하나 선택: 고정된 카메라 (Static Camera), 천천히 줌인 (Slow Zoom In), 빠르게 패닝 (Fast Panning), 드론 샷/공중 촬영 (Drone Shot), 피사체 추적 (Tracking Shot)" },
+              lighting: { type: Type.STRING, description: "다음 중 하나 선택: 시네마틱 조명 (Cinematic Lighting), 네온/사이버펑크 (Neon/Cyberpunk), 자연광/골든 아워 (Golden Hour), 어둡고 미스터리한 (Dark & Moody), 스튜디오 조명 (Studio Lighting)" }
+            },
+            required: ["action", "environment", "cameraMovement", "lighting"]
+          }
+        }
+      });
+      const data = JSON.parse(response.text || '{}');
+      if (data.action) setAction(data.action);
+      if (data.environment) setEnvironment(data.environment);
+      if (data.cameraMovement) setCameraMovement(data.cameraMovement);
+      if (data.lighting) setLighting(data.lighting);
+    } catch (error) {
+      console.error('Error auto planning:', error);
+      alert('자동 기획 중 오류가 발생했습니다.');
+    } finally {
+      setIsAutoPlanning(false);
     }
   };
 
@@ -158,7 +203,17 @@ export default function VideoGenerator() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1 space-y-5 bg-zinc-900/50 border border-white/10 p-6 rounded-3xl h-fit max-h-[800px] overflow-y-auto custom-scrollbar">
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">주제/피사체 <span className="text-red-400">*</span></label>
+            <div className="flex justify-between items-end mb-2">
+              <label className="block text-sm font-medium text-zinc-300">주제/피사체 <span className="text-red-400">*</span></label>
+              <button
+                onClick={handleAutoPlan}
+                disabled={isAutoPlanning || !subject}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+              >
+                {isAutoPlanning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                AI 자동 기획
+              </button>
+            </div>
             <input
               type="text"
               value={subject}
