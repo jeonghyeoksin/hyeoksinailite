@@ -88,7 +88,7 @@ export default function DetailPageGenerator() {
 제품명 "${productName}"과 핵심 소구점들이 레이아웃 흐름(${layoutStyle})에 맞게 시각적으로 아름답게 배치된 프로페셔널한 웹 디자인을 만들어주세요.`;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-3.1-flash-image-preview',
+        model: 'gemini-2.5-flash-image',
         contents: prompt,
         config: {
           imageConfig: {

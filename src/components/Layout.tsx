@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { FileText, Image as ImageIcon, Video, LogOut, Sparkles, ImagePlus, Key, LayoutTemplate, ExternalLink, Info, Home } from 'lucide-react';
+import { FileText, Image as ImageIcon, Video, LogOut, Sparkles, ImagePlus, Key, LayoutTemplate, ExternalLink, Info, Home, AlertCircle, Mail, X } from 'lucide-react';
 import { getApiKey } from '../utils/apiKey';
 
 interface LayoutProps {
@@ -14,6 +14,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
   const [showApiModal, setShowApiModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showApiKeyGuideModal, setShowApiKeyGuideModal] = useState(false);
+  const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
   const [tempKey, setTempKey] = useState('');
 
   const helpContent: Record<string, { title: string, desc: string, steps: string[] }> = {
@@ -168,7 +169,15 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
           })}
         </nav>
 
-        <div className="p-6 mt-auto hidden md:block border-t border-white/5">
+        <div className="p-6 mt-auto hidden md:block border-t border-white/5 space-y-4">
+          <button
+            onClick={() => setShowMaintenanceModal(true)}
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all group"
+          >
+            <AlertCircle className="w-4 h-4" />
+            <span className="text-sm font-semibold">오류 및 유지보수</span>
+          </button>
+          
           <div className="flex items-center gap-3 px-2">
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-zinc-800 to-zinc-700 flex items-center justify-center border border-white/10">
               <span className="text-xs font-bold text-zinc-300">정</span>
@@ -440,6 +449,59 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
               className="w-full py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold transition-all border border-white/10"
             >
               확인
+            </button>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Error & Maintenance Modal */}
+      {showMaintenanceModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-[0_0_50px_rgba(239,68,68,0.15)] relative overflow-hidden"
+          >
+            <div className="absolute top-0 left-0 w-full h-1 bg-red-500"></div>
+            <div className="flex justify-between items-start mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-500/20 rounded-xl flex items-center justify-center border border-red-500/30">
+                  <AlertCircle className="w-5 h-5 text-red-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">오류 및 유지보수</h3>
+              </div>
+              <button 
+                onClick={() => setShowMaintenanceModal(false)}
+                className="text-zinc-500 hover:text-white transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="space-y-6 text-center">
+              <p className="text-zinc-300 text-base leading-relaxed">
+                오류 및 유지보수 내용을 아래 이메일로 보내주시면 <br />
+                <span className="text-white font-bold">실시간으로 확인 후 피드백</span> 드립니다.
+              </p>
+              
+              <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-6 flex flex-col items-center gap-3 group">
+                <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center group-hover:bg-red-500/10 transition-colors">
+                  <Mail className="w-6 h-6 text-zinc-400 group-hover:text-red-400" />
+                </div>
+                <a 
+                  href="mailto:info@nextin.ai.kr"
+                  className="text-xl font-bold text-white hover:text-red-400 transition-colors tracking-tight"
+                >
+                  info@nextin.ai.kr
+                </a>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowMaintenanceModal(false)}
+              className="w-full mt-8 py-4 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold transition-all border border-red-500/20"
+            >
+              닫기
             </button>
           </motion.div>
         </div>

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
-import { Loader2, Send, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { Loader2, Send, Image as ImageIcon, Sparkles, Download, Zap } from 'lucide-react';
 import { getApiKey } from '../utils/apiKey';
+import JSZip from 'jszip';
 
 interface CardPage {
   title: string;
@@ -98,7 +99,7 @@ export default function CardNewsGenerator() {
       }
       const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
-        model: 'gemini-3.1-pro-preview',
+        model: 'gemini-3-flash-preview',
         contents: prompt,
         config: {
           responseMimeType: 'application/json',
@@ -146,7 +147,7 @@ export default function CardNewsGenerator() {
         }
         const ai = new GoogleGenAI({ apiKey });
         const response = await ai.models.generateContent({
-          model: 'gemini-3.1-flash-image-preview',
+          model: 'gemini-2.5-flash-image',
           contents: card.imagePrompt,
           config: {
             imageConfig: {
@@ -171,6 +172,123 @@ export default function CardNewsGenerator() {
     } finally {
       setLoadingImages(false);
     }
+  };
+
+  const handleOneClickGenerate = async () => {
+    if (!topic) return;
+    setCards([]);
+    setLoading(true);
+    
+    try {
+      // Step 1: Text Generation
+      const prompt = `
+주제: "${topic}"
+상세 내용: "${content}"
+타겟 독자층: "${targetAudience || '일반 대중'}"
+텍스트 톤앤매너: "${toneAndManner}"
+디자인/이미지 스타일: "${designStyle}"
+
+위 주제와 내용을 바탕으로 SNS(인스타그램/페이스북)에 올릴 매력적인 카드뉴스를 기획해주세요.
+총 ${pageCount}장으로 구성해주세요. 타겟 독자층(${targetAudience || '일반 대중'})의 공감을 이끌어낼 수 있는 '${toneAndManner}' 어조로 작성하세요.
+
+각 장마다 다음 내용을 포함해야 합니다:
+1. title: 카드뉴스 이미지 정중앙에 크게 들어갈 핵심 문구 (한국어, 짧고 강렬하게)
+2. content: 게시글 본문에 들어갈 상세 설명
+3. imagePrompt: 이미지 생성 AI를 위한 영문 프롬프트. 
+   [중요] 반드시 다음 형식을 따르세요: "A high quality background image of [배경 묘사]. The visual style MUST be ${designStyle}. The image MUST contain the exact Korean text '[title 내용]' written in large, clear, modern typography. DO NOT include any English text."
+`;
+
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
+        setLoading(false);
+        return;
+      }
+      const ai = new GoogleGenAI({ apiKey });
+      const textResponse = await ai.models.generateContent({
+        model: 'gemini-3-flash-preview',
+        contents: prompt,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                title: { type: Type.STRING },
+                content: { type: Type.STRING },
+                imagePrompt: { type: Type.STRING },
+              },
+              required: ['title', 'content', 'imagePrompt'],
+            },
+          },
+        },
+      });
+
+      const generatedCards = JSON.parse(textResponse.text || '[]') as CardPage[];
+      setCards(generatedCards);
+      setLoading(false);
+
+      // Step 2: Image Generation
+      if (generatedCards.length > 0) {
+        setLoadingImages(true);
+        const updatedCards = [...generatedCards];
+        
+        for (let i = 0; i < updatedCards.length; i++) {
+          const card = updatedCards[i];
+          const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: card.imagePrompt,
+            config: {
+              imageConfig: {
+                aspectRatio: aspectRatio,
+                imageSize: '1K',
+              }
+            }
+          });
+
+          for (const part of response.candidates?.[0]?.content?.parts || []) {
+            if (part.inlineData) {
+              const base64 = part.inlineData.data;
+              updatedCards[i].imageUrl = `data:image/jpeg;base64,${base64}`;
+              setCards([...updatedCards]);
+              break;
+            }
+          }
+        }
+        setLoadingImages(false);
+      }
+    } catch (error) {
+      console.error('Error in one-click generate:', error);
+      alert('생성 중 오류가 발생했습니다.');
+      setLoading(false);
+      setLoadingImages(false);
+    }
+  };
+
+  const handleDownloadAll = async () => {
+    const imagesToDownload = cards.filter(card => card.imageUrl);
+    if (imagesToDownload.length === 0) {
+      alert('다운로드할 이미지가 없습니다.');
+      return;
+    }
+
+    const zip = new JSZip();
+    const folder = zip.folder("card-news-images");
+
+    for (let i = 0; i < imagesToDownload.length; i++) {
+      const card = imagesToDownload[i];
+      if (card.imageUrl) {
+        const base64Data = card.imageUrl.split(',')[1];
+        folder?.file(`card-news-${i + 1}.jpg`, base64Data, { base64: true });
+      }
+    }
+
+    const content = await zip.generateAsync({ type: "blob" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(content);
+    link.download = `혁신AI_카드뉴스_${topic.substring(0, 10)}.zip`;
+    link.click();
   };
 
   return (
@@ -274,34 +392,52 @@ export default function CardNewsGenerator() {
               onChange={(e) => setPageCount(Number(e.target.value))}
               className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none"
             >
-              {[3, 4, 5, 6, 7, 8].map(num => (
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
                 <option key={num} value={num}>{num}장</option>
               ))}
             </select>
           </div>
           <button
             onClick={handleGenerateText}
-            disabled={loading || !topic}
-            className="w-full md:w-auto bg-white text-black hover:bg-zinc-200 px-8 py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 h-[50px]"
+            disabled={loading || loadingImages || !topic}
+            className="w-full md:w-auto bg-zinc-800 text-white hover:bg-zinc-700 px-8 py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 h-[50px]"
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
             텍스트 생성
+          </button>
+          <button
+            onClick={handleOneClickGenerate}
+            disabled={loading || loadingImages || !topic}
+            className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-500 hover:to-blue-500 px-8 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 h-[50px] shadow-lg shadow-purple-500/20"
+          >
+            {loading || loadingImages ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5" />}
+            원클릭 생성 (텍스트+이미지)
           </button>
         </div>
       </div>
 
       {cards.length > 0 && (
         <div className="space-y-6">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <h3 className="text-xl font-semibold text-white">생성된 카드뉴스 ({cards.length}장)</h3>
-            <button
-              onClick={handleGenerateImages}
-              disabled={loadingImages}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-xl font-medium transition-colors flex items-center gap-2 disabled:opacity-50"
-            >
-              {loadingImages ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4" />}
-              {loadingImages ? '이미지 생성 중...' : '배경 이미지 생성하기'}
-            </button>
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={handleDownloadAll}
+                disabled={loadingImages || cards.every(c => !c.imageUrl)}
+                className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded-xl font-medium transition-colors flex items-center gap-2 disabled:opacity-50 border border-white/10"
+              >
+                <Download className="w-4 h-4" />
+                전체 다운로드 (.zip)
+              </button>
+              <button
+                onClick={handleGenerateImages}
+                disabled={loadingImages}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-xl font-medium transition-colors flex items-center gap-2 disabled:opacity-50"
+              >
+                {loadingImages ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4" />}
+                {loadingImages ? '이미지 생성 중...' : '배경 이미지 생성하기'}
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

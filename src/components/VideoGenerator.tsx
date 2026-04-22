@@ -115,7 +115,7 @@ export default function VideoGenerator() {
       const fullPrompt = `${subject}가 ${environment}에서 ${action}하는 모습. 카메라 워크: ${cameraMovement}. 조명 및 분위기: ${lighting}. 고품질, 8k 해상도, 사실적인 렌더링.`;
 
       let operation = await ai.models.generateVideos({
-        model: 'veo-3.1-generate-preview',
+        model: 'veo-3.1-lite-generate-preview',
         prompt: fullPrompt,
         config: {
           numberOfVideos: 1,

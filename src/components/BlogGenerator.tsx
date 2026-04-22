@@ -106,7 +106,7 @@ ${ctaDetail ? `구체적인 행동 유도(CTA): ${ctaDetail}` : ''}
       }
       const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContentStream({
-        model: 'gemini-3.1-pro-preview',
+        model: 'gemini-3-flash-preview',
         contents: prompt,
       });
 
