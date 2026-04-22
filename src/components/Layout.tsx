@@ -13,6 +13,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
   const [apiKeyStatus, setApiKeyStatus] = useState<'checking' | 'applied' | 'missing'>('checking');
   const [showApiModal, setShowApiModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showApiKeyGuideModal, setShowApiKeyGuideModal] = useState(false);
   const [tempKey, setTempKey] = useState('');
 
   const helpContent: Record<string, { title: string, desc: string, steps: string[] }> = {
@@ -207,6 +208,14 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
             </div>
 
             <button
+              onClick={() => setShowApiKeyGuideModal(true)}
+              className="group flex items-center gap-2.5 px-5 py-2.5 bg-zinc-900/60 hover:bg-zinc-800/80 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-full text-sm font-semibold text-zinc-300 hover:text-white transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(245,158,11,0.2)]"
+            >
+              <Key className="w-4 h-4 text-amber-400 group-hover:text-amber-300 transition-colors" />
+              <span className="tracking-wide">API Key 설정방법</span>
+            </button>
+
+            <button
               onClick={() => setShowHelpModal(true)}
               className="group flex items-center gap-2.5 px-5 py-2.5 bg-zinc-900/60 hover:bg-zinc-800/80 backdrop-blur-xl border border-white/10 hover:border-blue-500/50 rounded-full text-sm font-semibold text-zinc-300 hover:text-white transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(59,130,246,0.2)]"
             >
@@ -302,6 +311,98 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 적용하기
               </button>
             </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* API Key Guide Modal */}
+      {showApiKeyGuideModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-6 md:p-8 max-w-2xl w-full shadow-[0_0_50px_rgba(245,158,11,0.15)] relative overflow-hidden my-8"
+          >
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 to-orange-500"></div>
+            
+            <div className="flex justify-between items-start mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center border border-amber-500/30">
+                  <Key className="w-5 h-5 text-amber-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">Google API Key 발급 및 설정 방법</h3>
+              </div>
+              <button 
+                onClick={() => setShowApiKeyGuideModal(false)}
+                className="text-zinc-500 hover:text-white p-2 transition-colors"
+              >
+                <LogOut className="w-5 h-5 rotate-180" />
+              </button>
+            </div>
+
+            <div className="space-y-6 overflow-y-auto max-h-[60vh] pr-2 custom-scrollbar">
+              <section className="space-y-3">
+                <h4 className="text-amber-400 font-bold flex items-center gap-2 text-lg">
+                  <span className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xs">1</span>
+                  Google AI Studio 접속
+                </h4>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  먼저 Google의 AI 스튜디오 페이지에 접속해야 합니다. 구글 계정으로 로그인이 필요합니다.
+                </p>
+                <a 
+                  href="https://aistudio.google.com/app/apikey" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm text-amber-100 transition-colors border border-white/5"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Google AI Studio 바로가기
+                </a>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-amber-400 font-bold flex items-center gap-2 text-lg">
+                  <span className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xs">2</span>
+                  API Key 생성
+                </h4>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  화면 왼쪽 메뉴에서 <span className="text-white font-semibold">"Get API key"</span> 버튼을 클릭한 후, <span className="text-white font-semibold">"Create API key in new project"</span> 버튼을 눌러 키를 생성합니다.
+                </p>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-amber-400 font-bold flex items-center gap-2 text-lg">
+                  <span className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xs">3</span>
+                  Key 복사 및 보안 확인
+                </h4>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  생성된 API Key(AIzaSy...)를 <span className="text-white font-semibold">복사(Copy)</span>합니다. 팝업창에서 'Copy' 버튼을 누르면 클립보드에 저장됩니다.
+                </p>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-amber-400 font-bold flex items-center gap-2 text-lg">
+                  <span className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xs">4</span>
+                  혁신AI Lite에 설정
+                </h4>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  현재 페이지 우측 상단의 <span className="text-white font-semibold">"Google API KEY 설정"</span> 버튼을 클릭한 후, 복사한 키를 붙여넣고 <span className="text-white font-semibold">"적용하기"</span>를 클릭합니다.
+                </p>
+              </section>
+              
+              <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-4">
+                <p className="text-amber-200/70 text-xs leading-relaxed">
+                  💡 <span className="font-bold">주의사항:</span> 발급받은 API 키는 개인의 자산입니다. 타인에게 공유하지 않도록 주의해 주세요. 본 서비스는 입력하신 키를 서버로 전송하지 않으며, 브라우저의 로컬 스토리지에만 안전하게 저장합니다.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowApiKeyGuideModal(false)}
+              className="w-full mt-8 py-3.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-100 font-semibold transition-all border border-amber-500/20"
+            >
+              확인 후 닫기
+            </button>
           </motion.div>
         </div>
       )}
