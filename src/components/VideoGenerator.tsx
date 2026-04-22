@@ -68,7 +68,7 @@ export default function VideoGenerator() {
       }
       const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
-        model: 'gemini-3.1-flash-preview',
+        model: 'gemini-3-flash-preview',
         contents: `주제/피사체 "${subject}"에 어울리는 동영상 생성을 위한 프롬프트 기획을 작성해주세요.`,
         config: {
           responseMimeType: 'application/json',

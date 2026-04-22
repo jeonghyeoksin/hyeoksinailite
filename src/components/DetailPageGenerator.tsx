@@ -31,7 +31,7 @@ export default function DetailPageGenerator() {
       }
       const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
-        model: 'gemini-3.1-flash-preview',
+        model: 'gemini-3-flash-preview',
         contents: `제품/서비스명 "${productName}", 카테고리/주제 "${topic}"에 대한 상세페이지 기획을 작성해주세요.`,
         config: {
           responseMimeType: 'application/json',
