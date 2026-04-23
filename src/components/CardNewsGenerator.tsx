@@ -17,7 +17,7 @@ export default function CardNewsGenerator() {
   const [targetAudience, setTargetAudience] = useState('');
   const [toneAndManner, setToneAndManner] = useState('트렌디하고 감각적인');
   const [designStyle, setDesignStyle] = useState('미니멀하고 깔끔한 (Minimal & Clean)');
-  const [pageCount, setPageCount] = useState(5);
+  const [pageCount, setPageCount] = useState(0);
   const [aspectRatio, setAspectRatio] = useState<'1:1' | '3:4'>('1:1');
   const [loading, setLoading] = useState(false);
   const [isAutoPlanning, setIsAutoPlanning] = useState(false);
@@ -82,7 +82,7 @@ export default function CardNewsGenerator() {
 디자인/이미지 스타일: "${designStyle}"
 
 위 주제와 내용을 바탕으로 SNS(인스타그램/페이스북)에 올릴 매력적인 카드뉴스를 기획해주세요.
-총 ${pageCount}장으로 구성해주세요. 타겟 독자층(${targetAudience || '일반 대중'})의 공감을 이끌어낼 수 있는 '${toneAndManner}' 어조로 작성하세요.
+${pageCount === 0 ? "분량은 주제의 깊이에 맞게 최적의 장수(보통 4~8장 사이)로 구성해주세요." : `총 ${pageCount}장으로 구성해주세요.`} 타겟 독자층(${targetAudience || '일반 대중'})의 공감을 이끌어낼 수 있는 '${toneAndManner}' 어조로 작성하세요.
 
 각 장마다 다음 내용을 포함해야 합니다:
 1. title: 카드뉴스 이미지 정중앙에 크게 들어갈 핵심 문구 (한국어, 짧고 강렬하게)
@@ -189,7 +189,7 @@ export default function CardNewsGenerator() {
 디자인/이미지 스타일: "${designStyle}"
 
 위 주제와 내용을 바탕으로 SNS(인스타그램/페이스북)에 올릴 매력적인 카드뉴스를 기획해주세요.
-총 ${pageCount}장으로 구성해주세요. 타겟 독자층(${targetAudience || '일반 대중'})의 공감을 이끌어낼 수 있는 '${toneAndManner}' 어조로 작성하세요.
+${pageCount === 0 ? "분량은 주제의 깊이에 맞게 최적의 장수(보통 4~8장 사이)로 구성해주세요." : `총 ${pageCount}장으로 구성해주세요.`} 타겟 독자층(${targetAudience || '일반 대중'})의 공감을 이끌어낼 수 있는 '${toneAndManner}' 어조로 작성하세요.
 
 각 장마다 다음 내용을 포함해야 합니다:
 1. title: 카드뉴스 이미지 정중앙에 크게 들어갈 핵심 문구 (한국어, 짧고 강렬하게)
@@ -294,7 +294,12 @@ export default function CardNewsGenerator() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold text-white mb-2">카드뉴스 생성</h2>
+        <div className="flex items-center gap-3 mb-2">
+          <h2 className="text-3xl font-bold text-white">카드뉴스 생성</h2>
+          <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
+            무료 API Key 사용 가능
+          </span>
+        </div>
         <p className="text-zinc-400">주제와 내용을 입력하면 매력적인 카드뉴스 텍스트와 맞춤형 배경 이미지를 생성합니다.</p>
       </div>
 
@@ -364,11 +369,18 @@ export default function CardNewsGenerator() {
               onChange={(e) => setDesignStyle(e.target.value)}
               className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none"
             >
-              <option value="미니멀하고 깔끔한 (Minimal & Clean)">미니멀하고 깔끔한</option>
-              <option value="화려하고 다채로운 (Colorful & Vibrant)">화려하고 다채로운</option>
-              <option value="감성적인 사진 위주 (Cinematic Photography)">감성적인 사진 위주</option>
-              <option value="3D 일러스트레이션 (3D Illustration)">3D 일러스트레이션</option>
-              <option value="사이버펑크/네온 (Cyberpunk/Neon)">사이버펑크/네온</option>
+              <option value="미니멀하고 깔끔한 (Minimal & Clean)">미니멀하고 깔끔한 (심플)</option>
+              <option value="화려하고 다채로운 (Colorful & Vibrant)">화려하고 다채로운 (비비드)</option>
+              <option value="감성적인 사진 위주 (Cinematic Photography)">감성적인 사진 위주 (필름감성)</option>
+              <option value="3D 일러스트레이션 (3D Illustration)">3D 일러스트레이션 (입체)</option>
+              <option value="사이버펑크/네온 (Cyberpunk/Neon)">사이버펑크/네온 (미래적)</option>
+              <option value="파스텔톤의 귀여운 (Cute Pastel)">파스텔톤의 귀여운 (동글동글)</option>
+              <option value="고급스러운 골드/블랙 (Luxury Gold & Black)">고급스러운 프리미엄 (럭셔리)</option>
+              <option value="레트로/복고풍 (Retro Vintage)">레트로/복고풍 (빈티지)</option>
+              <option value="자연적이고 편안한 (Nature & Eco-friendly)">자연적이고 편안한 (에코)</option>
+              <option value="기술적이고 미래적인 (Tech Futuristic)">기술적이고 미래적인 (IT/테크)</option>
+              <option value="키치하고 독특한 (Kitsch & Unique)">키치하고 독특한 (Y2K)</option>
+              <option value="차분한 모노톤 (Calm Monotone)">차분한 모노톤 (정갈한)</option>
             </select>
           </div>
         </div>
@@ -385,14 +397,15 @@ export default function CardNewsGenerator() {
               <option value="3:4">3:4 (1080 × 1440px)</option>
             </select>
           </div>
-          <div className="w-full md:w-32">
+          <div className="w-full md:w-40">
             <label className="block text-sm font-medium text-zinc-300 mb-2">장수</label>
             <select
               value={pageCount}
               onChange={(e) => setPageCount(Number(e.target.value))}
               className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none"
             >
-              {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
+              <option value={0}>AI 추천 (Auto)</option>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
                 <option key={num} value={num}>{num}장</option>
               ))}
             </select>

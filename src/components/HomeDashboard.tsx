@@ -8,11 +8,11 @@ interface HomeDashboardProps {
 
 export default function HomeDashboard({ setActiveTab }: HomeDashboardProps) {
   const features = [
-    { id: 'blog', title: '블로그 자동 생성', desc: 'SEO 최적화된 전문적인 블로그 포스팅을 단 몇 초만에 작성합니다.', icon: FileText, color: 'from-blue-500 to-cyan-500' },
-    { id: 'cardnews', title: 'SNS 카드뉴스', desc: '인스타그램, 페이스북에 딱 맞는 감각적인 카드뉴스를 기획/디자인합니다.', icon: ImageIcon, color: 'from-purple-500 to-pink-500' },
-    { id: 'image', title: '고품질 이미지', desc: '나노바나나2 모델로 한국어 텍스트가 포함된 완벽한 이미지를 생성합니다.', icon: Sparkles, color: 'from-amber-500 to-orange-500' },
-    { id: 'video', title: '시네마틱 동영상', desc: 'Veo 모델을 활용하여 프롬프트만으로 놀라운 퀄리티의 영상을 만듭니다.', icon: Video, color: 'from-emerald-500 to-teal-500' },
-    { id: 'detailpage', title: '상세페이지 디자인', desc: '이커머스 매출을 끌어올리는 프로페셔널한 상세페이지를 원클릭으로 제작합니다.', icon: LayoutTemplate, color: 'from-indigo-500 to-blue-500' },
+    { id: 'blog', title: '블로그 자동 생성', desc: 'SEO 최적화된 전문적인 블로그 포스팅을 단 몇 초만에 작성합니다.', icon: FileText, color: 'from-blue-500 to-cyan-500', isFree: true },
+    { id: 'cardnews', title: 'SNS 카드뉴스', desc: '인스타그램, 페이스북에 딱 맞는 감각적인 카드뉴스를 기획/디자인합니다.', icon: ImageIcon, color: 'from-purple-500 to-pink-500', isFree: true },
+    { id: 'image', title: '고품질 이미지', desc: '나노바나나2 모델로 한국어 텍스트가 포함된 완벽한 이미지를 생성합니다.', icon: Sparkles, color: 'from-amber-500 to-orange-500', isFree: true },
+    { id: 'video', title: '시네마틱 동영상', desc: 'Veo 모델을 활용하여 프롬프트만으로 놀라운 퀄리티의 영상을 만듭니다.', icon: Video, color: 'from-emerald-500 to-teal-500', isFree: false },
+    { id: 'detailpage', title: '상세페이지 디자인', desc: '이커머스 매출을 끌어올리는 프로페셔널한 상세페이지를 원클릭으로 제작합니다.', icon: LayoutTemplate, color: 'from-indigo-500 to-blue-500', isFree: true },
   ];
 
   return (
@@ -66,9 +66,20 @@ export default function HomeDashboard({ setActiveTab }: HomeDashboardProps) {
                   <Icon className="w-7 h-7 text-white" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-zinc-400 transition-all">
-                {feature.title}
-              </h3>
+              <div className="flex flex-col gap-2 mb-3">
+                <h3 className="text-xl font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-zinc-400 transition-all">
+                  {feature.title}
+                </h3>
+                {feature.isFree ? (
+                  <span className="w-fit text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
+                    무료 API Key 사용 가능
+                  </span>
+                ) : (
+                  <span className="w-fit text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
+                    유료 API key 권장
+                  </span>
+                )}
+              </div>
               <p className="text-zinc-400 text-sm leading-relaxed mb-6">
                 {feature.desc}
               </p>

@@ -188,7 +188,12 @@ export default function ImageGenerator() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold text-white mb-2">이미지 생성</h2>
+        <div className="flex items-center gap-3 mb-2">
+          <h2 className="text-3xl font-bold text-white">이미지 생성</h2>
+          <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
+            무료 API Key 사용 가능
+          </span>
+        </div>
         <p className="text-zinc-400">주제와 내용을 입력하면 한국어 텍스트가 포함된 매력적인 이미지를 생성합니다.</p>
       </div>
 

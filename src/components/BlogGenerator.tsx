@@ -168,7 +168,12 @@ ${ctaDetail ? `구체적인 행동 유도(CTA): ${ctaDetail}` : ''}
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold text-white mb-2">블로그 생성</h2>
+        <div className="flex items-center gap-3 mb-2">
+          <h2 className="text-3xl font-bold text-white">블로그 생성</h2>
+          <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
+            무료 API Key 사용 가능
+          </span>
+        </div>
         <p className="text-zinc-400">주제와 키워드를 입력하면 완성도 높은 블로그 포스트를 작성해 드립니다.</p>
       </div>
 

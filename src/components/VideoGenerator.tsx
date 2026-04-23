@@ -170,7 +170,12 @@ export default function VideoGenerator() {
     return (
       <div className="space-y-8">
         <div>
-          <h2 className="text-3xl font-bold text-white mb-2">동영상 생성</h2>
+          <div className="flex items-center gap-3 mb-2">
+            <h2 className="text-3xl font-bold text-white">동영상 생성</h2>
+            <span className="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
+              유료 API key 권장
+            </span>
+          </div>
           <p className="text-zinc-400">Veo 모델을 사용하여 고품질 동영상을 생성합니다.</p>
         </div>
         <div className="bg-zinc-900/80 border border-purple-500/30 p-8 rounded-3xl text-center max-w-2xl mx-auto mt-10">
@@ -196,7 +201,12 @@ export default function VideoGenerator() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold text-white mb-2">동영상 생성</h2>
+        <div className="flex items-center gap-3 mb-2">
+          <h2 className="text-3xl font-bold text-white">동영상 생성</h2>
+          <span className="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
+            유료 API key 권장
+          </span>
+        </div>
         <p className="text-zinc-400">프롬프트를 입력하면 Veo 모델이 멋진 동영상을 만들어냅니다.</p>
       </div>
 
