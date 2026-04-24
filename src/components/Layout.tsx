@@ -392,58 +392,107 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
             </div>
 
             <div className="space-y-6 overflow-y-auto max-h-[60vh] pr-2 custom-scrollbar">
-              <section className="space-y-3">
-                <h4 className="text-amber-400 font-bold flex items-center gap-2 text-lg">
-                  <span className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xs">1</span>
-                  Google AI Studio 접속
+              <div className="flex gap-2">
+                <div className="flex-1 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                  <p className="text-[10px] text-emerald-400 font-bold mb-1 uppercase tracking-wider">Free Tier</p>
+                  <p className="text-xs text-white font-medium">개인 용도 (무료)</p>
+                </div>
+                <div className="flex-1 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                  <p className="text-[10px] text-amber-500 font-bold mb-1 uppercase tracking-wider">Paid Tier</p>
+                  <p className="text-xs text-white font-medium">상업 용도 (유료/권장)</p>
+                </div>
+              </div>
+
+              <section className="space-y-4">
+                <h4 className="text-white font-bold flex items-center gap-2 text-lg border-b border-white/5 pb-2">
+                  <span className="w-6 h-6 rounded-lg bg-zinc-800 flex items-center justify-center text-xs text-zinc-400">01</span>
+                  공통: API Key 발급받기
                 </h4>
-                <p className="text-zinc-400 text-sm leading-relaxed">
-                  먼저 Google의 AI 스튜디오 페이지에 접속해야 합니다. 구글 계정으로 로그인이 필요합니다.
-                </p>
-                <a 
-                  href="https://aistudio.google.com/app/apikey" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm text-amber-100 transition-colors border border-white/5"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Google AI Studio 바로가기
-                </a>
+                <div className="space-y-3">
+                  <div className="flex gap-3">
+                    <div className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-[10px] font-bold">1</span>
+                    </div>
+                    <div>
+                      <p className="text-zinc-300 text-sm font-semibold mb-1">Google AI Studio 접속</p>
+                      <p className="text-zinc-500 text-xs leading-relaxed mb-2">아래 버튼을 눌러 API 키 관리 페이지로 이동하세요.</p>
+                      <a 
+                        href="https://aistudio.google.com/app/apikey" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-xs text-amber-100 transition-colors border border-white/5"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        Google AI Studio 바로가기
+                      </a>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-[10px] font-bold">2</span>
+                    </div>
+                    <div>
+                      <p className="text-zinc-300 text-sm font-semibold mb-1">Key 생성 및 복사</p>
+                      <p className="text-zinc-500 text-xs leading-relaxed">
+                        <span className="text-white">"Create API key"</span>를 눌러 키를 생성하고 복사(Copy)합니다.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </section>
 
-              <section className="space-y-3">
-                <h4 className="text-amber-400 font-bold flex items-center gap-2 text-lg">
-                  <span className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xs">2</span>
-                  API Key 생성
+              <section className="space-y-4">
+                <h4 className="text-amber-400 font-bold flex items-center gap-2 text-lg border-b border-amber-500/10 pb-2">
+                  <span className="w-6 h-6 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xs">02</span>
+                  유료: 종량제(Paid Tier) 설정 방법
                 </h4>
-                <p className="text-zinc-400 text-sm leading-relaxed">
-                  화면 왼쪽 메뉴에서 <span className="text-white font-semibold">"Get API key"</span> 버튼을 클릭한 후, <span className="text-white font-semibold">"Create API key in new project"</span> 버튼을 눌러 키를 생성합니다.
+                <p className="text-zinc-400 text-xs leading-relaxed">
+                  동영상 생성(Veo 등) 및 고품질 이미지의 쾌적한 사용을 위해 유료 티어(종량제) 사용을 적극 권장합니다.
                 </p>
+                <div className="space-y-3">
+                   <div className="flex gap-3">
+                    <div className="w-5 h-5 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-[10px] font-bold text-amber-400">1</span>
+                    </div>
+                    <div>
+                      <p className="text-zinc-300 text-sm font-semibold mb-1">결제 정보 등록 (Google Cloud)</p>
+                      <p className="text-zinc-500 text-xs leading-relaxed">
+                        <a href="https://console.cloud.google.com/billing" target="_blank" className="text-amber-400 underline underline-offset-2">Google Cloud Console</a>에서 결제 계정을 등록하세요.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="w-5 h-5 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-[10px] font-bold text-amber-400">2</span>
+                    </div>
+                    <div>
+                      <p className="text-zinc-300 text-sm font-semibold mb-1">AI Studio 요금제 전환</p>
+                      <p className="text-zinc-500 text-xs leading-relaxed">
+                        AI Studio 좌측 하단 <span className="text-white">"Settings" &gt; "Plan"</span> 메뉴에서 <span className="text-white">"Pay-as-you-go"</span>를 활성화합니다.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </section>
 
-              <section className="space-y-3">
-                <h4 className="text-amber-400 font-bold flex items-center gap-2 text-lg">
-                  <span className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xs">3</span>
-                  Key 복사 및 보안 확인
+              <section className="space-y-4">
+                <h4 className="text-purple-400 font-bold flex items-center gap-2 text-lg border-b border-purple-500/10 pb-2">
+                  <span className="w-6 h-6 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-xs">03</span>
+                  적용: 혁신AI Lite에 설정
                 </h4>
-                <p className="text-zinc-400 text-sm leading-relaxed">
-                  생성된 API Key(AIzaSy...)를 <span className="text-white font-semibold">복사(Copy)</span>합니다. 팝업창에서 'Copy' 버튼을 누르면 클립보드에 저장됩니다.
-                </p>
-              </section>
-
-              <section className="space-y-3">
-                <h4 className="text-amber-400 font-bold flex items-center gap-2 text-lg">
-                  <span className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xs">4</span>
-                  혁신AI Lite에 설정
-                </h4>
-                <p className="text-zinc-400 text-sm leading-relaxed">
-                  현재 페이지 우측 상단의 <span className="text-white font-semibold">"Google API KEY 설정"</span> 버튼을 클릭한 후, 복사한 키를 붙여넣고 <span className="text-white font-semibold">"적용하기"</span>를 클릭합니다.
-                </p>
+                <div className="flex gap-3">
+                  <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-[10px] font-bold text-purple-400">1</span>
+                  </div>
+                  <p className="text-zinc-400 text-xs leading-relaxed">
+                    우측 상단의 <span className="text-white font-semibold">"Google API KEY 설정"</span> 버튼을 클릭하여 복사한 키를 넣고 적용하세요.
+                  </p>
+                </div>
               </section>
               
-              <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-4">
-                <p className="text-amber-200/70 text-xs leading-relaxed">
-                  💡 <span className="font-bold">주의사항:</span> 발급받은 API 키는 개인의 자산입니다. 타인에게 공유하지 않도록 주의해 주세요. 본 서비스는 입력하신 키를 서버로 전송하지 않으며, 브라우저의 로컬 스토리지에만 안전하게 저장합니다.
+              <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-4">
+                <p className="text-zinc-500 text-[10px] leading-relaxed">
+                  💡 발급받은 API 키는 개인의 자산입니다. 본 서비스는 입력하신 키를 서버로 전송하지 않으며, 브라우저 로컬 스토리지에만 저장됩니다.
                 </p>
               </div>
             </div>
