@@ -138,9 +138,9 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white flex flex-col md:flex-row font-sans selection:bg-purple-500/30">
-      {/* Sidebar */}
-      <div className="w-full md:w-72 bg-black/40 backdrop-blur-2xl border-b md:border-b-0 md:border-r border-white/5 flex flex-col relative z-20">
+    <div className="min-h-screen bg-[#050505] text-white flex flex-col md:flex-row font-sans selection:bg-purple-500/30 pb-24 md:pb-0">
+      {/* Sidebar - Hidden on Mobile */}
+      <div className="hidden md:flex w-72 bg-black/40 backdrop-blur-2xl border-r border-white/5 flex-col relative z-20 h-screen sticky top-0">
         <div className="p-8 flex items-center gap-4">
           <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(168,85,247,0.4)] border border-white/10">
             <Sparkles className="w-6 h-6 text-white" />
@@ -148,7 +148,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
           <span className="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-400">혁신AI Lite</span>
         </div>
 
-        <nav className="flex-1 px-6 py-4 space-y-3 overflow-x-auto md:overflow-x-visible flex md:block">
+        <nav className="flex-1 px-6 py-4 space-y-3">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -159,20 +159,20 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 className={`flex items-center gap-4 w-full px-5 py-4 rounded-2xl transition-all duration-300 whitespace-nowrap group ${
                   isActive 
                     ? 'bg-gradient-to-r from-purple-600/20 to-blue-600/10 text-white border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.1)]' 
-                    : 'text-zinc-400 hover:bg-white/5 hover:text-white border border-transparent'
+                    : 'text-zinc-500 hover:bg-white/5 hover:text-white border border-transparent'
                 }`}
               >
-                <Icon className={`w-5 h-5 transition-colors duration-300 ${isActive ? 'text-purple-400' : 'group-hover:text-purple-400'}`} />
-                <span className="font-semibold tracking-wide">{tab.label}</span>
+                <Icon className={`w-5 h-5 flex-shrink-0 transition-colors duration-300 ${isActive ? 'text-purple-400' : 'group-hover:text-purple-400'}`} />
+                <span className="font-semibold tracking-wide text-base">{tab.label}</span>
               </button>
             );
           })}
         </nav>
 
-        <div className="p-6 mt-auto hidden md:block border-t border-white/5 space-y-4">
+        <div className="p-6 mt-auto border-t border-white/5 space-y-4">
           <button
             onClick={() => setShowMaintenanceModal(true)}
-            className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all group"
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-all group"
           >
             <AlertCircle className="w-4 h-4" />
             <span className="text-sm font-semibold">오류 및 유지보수</span>
@@ -187,84 +187,126 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
         </div>
       </div>
 
+      {/* Mobile Top Header (Small Title only on mobile) */}
+      <div className="md:hidden flex items-center justify-between p-5 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5 sticky top-0 z-30">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center shadow-lg border border-white/10">
+            <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          <span className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-400">혁신AI Lite</span>
+        </div>
+        <button
+          onClick={() => setShowMaintenanceModal(true)}
+          className="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center border border-white/5 text-zinc-400"
+        >
+          <AlertCircle className="w-5 h-5" />
+        </button>
+      </div>
+
       {/* Main Content */}
       <div className="flex-1 overflow-auto relative bg-[#050505]">
-        {/* Atmospheric Background Gradients */}
+        {/* Mobile Bottom Navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-black/80 backdrop-blur-2xl border-t border-white/10 px-2 py-3">
+        <nav className="flex justify-around items-center">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex flex-col items-center gap-1.5 transition-all duration-300 ${
+                  isActive ? 'text-purple-400' : 'text-zinc-500'
+                }`}
+              >
+                <div className={`p-2 rounded-xl transition-all ${isActive ? 'bg-purple-500/10' : ''}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-bold tracking-tight">{tab.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* Atmospheric Background Gradients */}
         <div className="absolute top-0 left-1/4 w-[60%] h-[60%] bg-purple-900/20 rounded-full blur-[180px] pointer-events-none mix-blend-screen"></div>
         <div className="absolute bottom-0 right-0 w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[150px] pointer-events-none mix-blend-screen"></div>
         
-        <main className="p-6 md:p-12 max-w-6xl mx-auto relative z-10">
+        <main className="p-4 md:p-12 max-w-6xl mx-auto relative z-10">
           {/* Top Header Actions */}
-          <div className="flex flex-col md:flex-row justify-end items-end md:items-center gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-2 md:gap-3 mb-6 md:mb-8">
             {/* Status Indicator */}
-            <div className={`flex items-center gap-2 px-4 py-2.5 rounded-full border backdrop-blur-md transition-all duration-500 ${
+            <div className={`flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-lg md:rounded-full border backdrop-blur-md transition-all duration-500 flex-1 sm:flex-none ${
               apiKeyStatus === 'applied' 
                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
                 : apiKeyStatus === 'missing'
-                ? 'bg-red-500/10 border-red-500/30 text-red-400'
-                : 'bg-zinc-500/10 border-zinc-500/30 text-zinc-400'
+                ? 'bg-red-500/10 border-red-500/30 text-red-500'
+                : 'bg-zinc-500/10 border-zinc-500/30 text-zinc-500'
             }`}>
-              <div className={`w-2 h-2 rounded-full ${
+              <div className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${
                 apiKeyStatus === 'applied' ? 'bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]' : 
                 apiKeyStatus === 'missing' ? 'bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.8)] animate-pulse' : 
                 'bg-zinc-400 animate-pulse'
               }`} />
-              <span className="text-sm font-semibold tracking-wide">
-                {apiKeyStatus === 'applied' ? 'API 키 적용 완료 (혁신AI Lite 사용 가능)' : 
-                 apiKeyStatus === 'missing' ? 'API 키 미적용 (설정 필요)' : 
-                 'API 키 상태 확인 중...'}
+              <span className="text-[10px] md:text-sm font-bold tracking-tight">
+                {apiKeyStatus === 'applied' ? 'API 키 적용됨' : 
+                 apiKeyStatus === 'missing' ? 'API 키 설정필요' : 
+                 '상태 확인 중...'}
               </span>
             </div>
 
-            <button
-              onClick={() => setShowApiKeyGuideModal(true)}
-              className="group flex items-center gap-2.5 px-5 py-2.5 bg-zinc-900/60 hover:bg-zinc-800/80 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-full text-sm font-semibold text-zinc-300 hover:text-white transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(245,158,11,0.2)]"
-            >
-              <Key className="w-4 h-4 text-amber-400 group-hover:text-amber-300 transition-colors" />
-              <span className="tracking-wide">API Key 설정방법</span>
-            </button>
+            <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2">
+              <button
+                onClick={() => setShowApiKeyGuideModal(true)}
+                className="group flex items-center justify-center gap-2 px-3 md:px-5 py-2 md:py-2.5 bg-zinc-900/60 hover:bg-zinc-800/80 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-lg md:rounded-full text-[11px] md:text-sm font-bold text-zinc-300 hover:text-white transition-all duration-300 shadow-lg"
+              >
+                <Key className="w-3.5 h-3.5 text-amber-400" />
+                <span>가이드</span>
+              </button>
 
-            <button
-              onClick={() => setShowHelpModal(true)}
-              className="group flex items-center gap-2.5 px-5 py-2.5 bg-zinc-900/60 hover:bg-zinc-800/80 backdrop-blur-xl border border-white/10 hover:border-blue-500/50 rounded-full text-sm font-semibold text-zinc-300 hover:text-white transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(59,130,246,0.2)]"
-            >
-              <Info className="w-4 h-4 text-blue-400 group-hover:text-blue-300 transition-colors" />
-              <span className="tracking-wide">사용방법</span>
-            </button>
+              <button
+                onClick={() => setShowHelpModal(true)}
+                className="group flex items-center justify-center gap-2 px-3 md:px-5 py-2 md:py-2.5 bg-zinc-900/60 hover:bg-zinc-800/80 backdrop-blur-xl border border-white/10 hover:border-blue-500/50 rounded-lg md:rounded-full text-[11px] md:text-sm font-bold text-zinc-300 hover:text-white transition-all duration-300 shadow-lg"
+              >
+                <Info className="w-3.5 h-3.5 text-blue-400" />
+                <span>도움말</span>
+              </button>
+            </div>
 
             <button
               onClick={handleApiKeyClick}
-              className="group flex items-center gap-2.5 px-5 py-2.5 bg-zinc-900/60 hover:bg-zinc-800/80 backdrop-blur-xl border border-white/10 hover:border-purple-500/50 rounded-full text-sm font-semibold text-zinc-300 hover:text-white transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(168,85,247,0.2)]"
+              className="group flex items-center justify-center gap-2 px-4 md:px-5 py-2 md:py-2.5 bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600/30 hover:to-blue-600/30 backdrop-blur-xl border border-purple-500/30 hover:border-purple-500/50 rounded-lg md:rounded-full text-[11px] md:text-sm font-bold text-white transition-all duration-300 shadow-lg h-10 sm:h-auto"
             >
-              <Key className="w-4 h-4 text-purple-400 group-hover:text-purple-300 transition-colors" />
-              <span className="tracking-wide">Google API KEY 설정</span>
+              <Key className="w-3.5 h-3.5 text-purple-400 group-hover:text-purple-300 transition-colors" />
+              <span>Google API KEY 설정</span>
             </button>
           </div>
 
           {/* Banner Image */}
-          <div className="w-full aspect-video md:aspect-[21/9] relative rounded-[2rem] overflow-hidden mb-12 border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.5)] group">
+          <div className="w-full aspect-[4/3] sm:aspect-video md:aspect-[21/9] relative rounded-[1.5rem] md:rounded-[2rem] overflow-hidden mb-8 md:mb-12 border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.5)] group">
             <div className="w-full h-full bg-gradient-to-br from-emerald-800 via-emerald-600 to-yellow-500 transition-transform duration-[2000ms] group-hover:scale-110" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-black/60 to-transparent flex flex-col justify-end p-8 md:p-14">
-              <div className="flex items-center gap-4 mb-5">
-                <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-yellow-500 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.6)] border border-white/20">
-                  <Sparkles className="w-7 h-7 text-white" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-black/40 md:via-black/60 to-transparent flex flex-col justify-end p-6 md:p-14">
+              <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-5">
+                <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-emerald-500 to-yellow-500 rounded-xl md:rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.6)] border border-white/20">
+                  <Sparkles className="w-5 h-5 md:w-7 md:h-7 text-white" />
                 </div>
-                <h1 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-emerald-100 to-yellow-100 tracking-tighter drop-shadow-2xl">
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-emerald-100 to-yellow-100 tracking-tighter drop-shadow-2xl">
                   혁신AI Lite
                 </h1>
               </div>
-              <p className="text-zinc-300 text-lg md:text-2xl max-w-3xl leading-relaxed font-medium drop-shadow-lg tracking-tight mb-8">
-                혁신AI의 기본기능을 체험해볼 수 있습니다. <br /> 고급기능은 혁신AI 프리미엄멤버십 신청시 사용가능합니다.
+              <p className="text-zinc-300 text-sm md:text-lg lg:text-2xl max-w-3xl leading-relaxed font-medium drop-shadow-lg tracking-tight mb-6 md:mb-8">
+                혁신AI의 기본기능을 체험해볼 수 있습니다. <br className="hidden sm:block" /> 고급기능은 혁신AI 프리미엄멤버십 신청시 사용가능합니다.
               </p>
               <a
                 href="https://hyeoksinai.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-600 to-yellow-600 hover:from-emerald-500 hover:to-yellow-500 rounded-2xl text-white font-bold text-lg md:text-xl transition-all duration-300 shadow-[0_0_40px_rgba(16,185,129,0.4)] hover:shadow-[0_0_60px_rgba(16,185,129,0.6)] hover:-translate-y-1 w-fit"
+                className="group flex items-center justify-center gap-2 md:gap-3 px-5 md:px-8 py-3 md:py-4 bg-gradient-to-r from-emerald-600 to-yellow-600 hover:from-emerald-500 hover:to-yellow-500 rounded-xl md:rounded-2xl text-white font-bold text-sm md:text-xl transition-all duration-300 shadow-[0_0_40px_rgba(16,185,129,0.4)] hover:shadow-[0_0_60px_rgba(16,185,129,0.6)] hover:-translate-y-1 w-full sm:w-fit text-center"
               >
-                <Sparkles className="w-6 h-6 text-emerald-100 group-hover:text-white transition-colors" />
-                <span className="tracking-wide">혁신AI 메인 대시보드 바로가기</span>
-                <ExternalLink className="w-6 h-6 ml-1 text-emerald-100 group-hover:text-white transition-colors" />
+                <Sparkles className="w-4 h-4 md:w-6 md:h-6 text-emerald-100 group-hover:text-white transition-colors" />
+                <span className="tracking-wide">AI 대시보드 바로가기</span>
+                <ExternalLink className="w-4 h-4 md:w-6 md:h-6 ml-1 text-emerald-100 group-hover:text-white transition-colors" />
               </a>
             </div>
           </div>
