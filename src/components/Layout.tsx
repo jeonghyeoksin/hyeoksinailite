@@ -338,7 +338,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 </h1>
               </div>
               <p className="text-zinc-300 text-sm md:text-lg lg:text-2xl max-w-3xl leading-relaxed font-medium drop-shadow-lg tracking-tight mb-6 md:mb-8">
-                혁신AI의 기본기능을 체험해볼 수 있습니다. <br className="hidden sm:block" /> 고급기능은 혁신AI 프리미엄멤버십 신청시 사용가능합니다.
+                혁신AI의 기본기능을 체험해볼 수 있습니다.
               </p>
               <a
                 href="https://hyeoksinai.com"
