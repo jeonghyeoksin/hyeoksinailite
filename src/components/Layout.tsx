@@ -15,7 +15,40 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showApiKeyGuideModal, setShowApiKeyGuideModal] = useState(false);
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
+  const [showPatchNotesModal, setShowPatchNotesModal] = useState(false);
   const [tempKey, setTempKey] = useState('');
+
+  const patchNotes = [
+    {
+      version: 'v1.1.1',
+      date: '2026.04.27',
+      updates: [
+        '상세페이지 및 이미지 생성 모델 최적화 (오류 해결)',
+        '실시간 패치노트 기능 추가',
+        '사이드바 "오류 및 유지보수 문의"로 명칭 변경',
+        '배너 "혁신 AI 플랫폼 바로가기"로 명칭 변경'
+      ],
+      isLatest: true
+    },
+    {
+      version: 'v1.1.0',
+      date: '2026.04.24',
+      updates: [
+        '모바일 반응형 UI 대폭 개선 (하단 탭바 도입)',
+        '카드뉴스 생성 시 "AI 추천 (Auto)" 장수 옵션 추가',
+        '메뉴 아이콘 및 텍스트 가독성 최적화'
+      ]
+    },
+    {
+      version: 'v1.0.5',
+      date: '2026.04.22',
+      updates: [
+        '카드뉴스 디자인 스타일 12종으로 전격 확장',
+        '유료 API Key 사용 권장 안내 및 가이드 보완',
+        '기능별 무료/유료 배지 표시 추가'
+      ]
+    }
+  ];
 
   const helpContent: Record<string, { title: string, desc: string, steps: string[] }> = {
     home: {
@@ -175,7 +208,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
             className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-all group"
           >
             <AlertCircle className="w-4 h-4" />
-            <span className="text-sm font-semibold">오류 및 유지보수</span>
+            <span className="text-sm font-semibold">오류 및 유지보수 문의</span>
           </button>
           
           <div className="flex items-center gap-3 px-2">
@@ -258,6 +291,15 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
 
             <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2">
               <button
+                onClick={() => setShowPatchNotesModal(true)}
+                className="group relative flex items-center justify-center gap-2 px-3 md:px-5 py-2 md:py-2.5 bg-zinc-900/60 hover:bg-zinc-800/80 backdrop-blur-xl border border-white/10 hover:border-purple-500/50 rounded-lg md:rounded-full text-[11px] md:text-sm font-bold text-zinc-300 hover:text-white transition-all duration-300 shadow-lg"
+              >
+                <div className="absolute -top-1.5 -right-1 bg-gradient-to-r from-red-600 to-pink-600 text-[8px] md:text-[9px] text-white px-1.5 py-0.5 rounded-full font-black tracking-tighter shadow-lg shadow-red-500/30 animate-bounce">NEW</div>
+                <FileText className="w-3.5 h-3.5 text-purple-400" />
+                <span>패치노트</span>
+              </button>
+
+              <button
                 onClick={() => setShowApiKeyGuideModal(true)}
                 className="group flex items-center justify-center gap-2 px-3 md:px-5 py-2 md:py-2.5 bg-zinc-900/60 hover:bg-zinc-800/80 backdrop-blur-xl border border-white/10 hover:border-amber-500/50 rounded-lg md:rounded-full text-[11px] md:text-sm font-bold text-zinc-300 hover:text-white transition-all duration-300 shadow-lg"
               >
@@ -305,7 +347,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 className="group flex items-center justify-center gap-2 md:gap-3 px-5 md:px-8 py-3 md:py-4 bg-gradient-to-r from-emerald-600 to-yellow-600 hover:from-emerald-500 hover:to-yellow-500 rounded-xl md:rounded-2xl text-white font-bold text-sm md:text-xl transition-all duration-300 shadow-[0_0_40px_rgba(16,185,129,0.4)] hover:shadow-[0_0_60px_rgba(16,185,129,0.6)] hover:-translate-y-1 w-full sm:w-fit text-center"
               >
                 <Sparkles className="w-4 h-4 md:w-6 md:h-6 text-emerald-100 group-hover:text-white transition-colors" />
-                <span className="tracking-wide">AI 대시보드 바로가기</span>
+                <span className="tracking-wide">혁신 AI 플랫폼 바로가기</span>
                 <ExternalLink className="w-4 h-4 md:w-6 md:h-6 ml-1 text-emerald-100 group-hover:text-white transition-colors" />
               </a>
             </div>
@@ -321,6 +363,65 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
           </motion.div>
         </main>
       </div>
+
+      {/* Patch Notes Modal */}
+      {showPatchNotesModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-[0_0_50px_rgba(168,85,247,0.15)] relative overflow-hidden flex flex-col max-h-[80vh]"
+          >
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-blue-500"></div>
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center border border-purple-500/30">
+                  <FileText className="w-5 h-5 text-purple-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">패치노트</h3>
+                  <p className="text-zinc-500 text-xs">혁신AI Lite 업데이트 현황</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowPatchNotesModal(false)}
+                className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-zinc-400 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar">
+              {patchNotes.map((patch, idx) => (
+                <div key={idx} className={`relative p-5 rounded-2xl border transition-all ${patch.isLatest ? 'bg-purple-500/5 border-purple-500/20 shadow-lg shadow-purple-500/5' : 'bg-white/5 border-white/5'}`}>
+                  {patch.isLatest && (
+                    <span className="absolute -top-2 -right-2 bg-purple-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">LATEST</span>
+                  )}
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-lg font-bold text-white">{patch.version}</span>
+                    <span className="text-xs text-zinc-500 font-mono">{patch.date}</span>
+                  </div>
+                  <ul className="space-y-2.5">
+                    {patch.updates.map((update, uIdx) => (
+                      <li key={uIdx} className="flex gap-2.5 text-sm text-zinc-400 leading-relaxed">
+                        <span className="text-purple-500 font-bold">•</span>
+                        <span>{update}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowPatchNotesModal(false)}
+              className="w-full mt-6 py-4 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold transition-all border border-white/10"
+            >
+              닫기
+            </button>
+          </motion.div>
+        </div>
+      )}
 
       {/* API Key Modal for Vercel/External Deployment */}
       {showApiModal && (
@@ -559,7 +660,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 <div className="w-10 h-10 bg-red-500/20 rounded-xl flex items-center justify-center border border-red-500/30">
                   <AlertCircle className="w-5 h-5 text-red-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-white">오류 및 유지보수</h3>
+                <h3 className="text-2xl font-bold text-white">오류 및 유지보수 문의</h3>
               </div>
               <button 
                 onClick={() => setShowMaintenanceModal(false)}
@@ -571,7 +672,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
             
             <div className="space-y-6 text-center">
               <p className="text-zinc-300 text-base leading-relaxed">
-                오류 및 유지보수 내용을 아래 이메일로 보내주시면 <br />
+                오류 및 유지보수 문의 내용을 아래 이메일로 보내주시면 <br />
                 <span className="text-white font-bold">실시간으로 확인 후 피드백</span> 드립니다.
               </p>
               

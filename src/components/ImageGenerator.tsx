@@ -124,12 +124,12 @@ export default function ImageGenerator() {
 지정된 화풍(${artStyle}), 색감(${colorPalette}), 분위기(${mood}), 조명(${lighting})을 엄격하게 반영하여 세련되고 매력적인 스타일로 만들어주세요.`;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
+        model: 'imagen-3-fast',
         contents: prompt,
         config: {
           imageConfig: {
             aspectRatio: aspectRatio,
-            imageSize: '1K',
+            imageSize: "1024",
           }
         }
       });
