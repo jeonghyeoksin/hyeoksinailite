@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
 import { Loader2, LayoutTemplate, Download, Sparkles } from 'lucide-react';
 import { getApiKey } from '../utils/apiKey';
+import CostInfo from './CostInfo';
 
 export default function DetailPageGenerator() {
   const [productName, setProductName] = useState('');
@@ -125,11 +126,19 @@ export default function DetailPageGenerator() {
   return (
     <div className="space-y-8">
       <div>
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex flex-wrap items-center gap-3 mb-2">
           <h2 className="text-3xl font-bold text-white">상세페이지 생성</h2>
-          <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
-            무료 API Key 사용 가능
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
+              무료 API Key 사용 가능
+            </span>
+            <CostInfo 
+              featureName="상세페이지 생성" 
+              minCost={50} 
+              maxCost={150} 
+              description="텍스트 기획 및 레이아웃 구성(Gemini 2.0 Flash)과 1장의 고해상도 상세페이지 이미지(Imagen 3) 생성 비용이 포함됩니다." 
+            />
+          </div>
         </div>
         <p className="text-zinc-400">나노바나나2 모델을 활용하여 한국어 깨짐 없는 고품질 상세페이지를 제작합니다.</p>
       </div>

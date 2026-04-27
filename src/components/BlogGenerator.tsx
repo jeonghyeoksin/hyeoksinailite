@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
 import { Loader2, Send, Copy, Check, Code, Sparkles } from 'lucide-react';
 import Markdown from 'react-markdown';
+import CostInfo from './CostInfo';
 
 import { getApiKey } from '../utils/apiKey';
 
@@ -168,11 +169,19 @@ ${ctaDetail ? `구체적인 행동 유도(CTA): ${ctaDetail}` : ''}
   return (
     <div className="space-y-8">
       <div>
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex flex-wrap items-center gap-3 mb-2">
           <h2 className="text-3xl font-bold text-white">블로그 생성</h2>
-          <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
-            무료 API Key 사용 가능
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
+              무료 API Key 사용 가능
+            </span>
+            <CostInfo 
+              featureName="블로그 생성" 
+              minCost={1} 
+              maxCost={10} 
+              description="텍스트 생성(Gemini 2.0 Flash) 기술이 사용됩니다. 텍스트 위주의 작업이므로 API 비용이 매우 저렴합니다." 
+            />
+          </div>
         </div>
         <p className="text-zinc-400">주제와 키워드를 입력하면 완성도 높은 블로그 포스트를 작성해 드립니다.</p>
       </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
 import { Loader2, Video as VideoIcon, Key, Sparkles } from 'lucide-react';
 import { getApiKey } from '../utils/apiKey';
+import CostInfo from './CostInfo';
 
 export default function VideoGenerator() {
   const [subject, setSubject] = useState('');
@@ -201,11 +202,19 @@ export default function VideoGenerator() {
   return (
     <div className="space-y-8">
       <div>
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex flex-wrap items-center gap-3 mb-2">
           <h2 className="text-3xl font-bold text-white">동영상 생성</h2>
-          <span className="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
-            유료 API key 권장
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
+              유료 API key 권장
+            </span>
+            <CostInfo 
+              featureName="동영상 생성" 
+              minCost={400} 
+              maxCost={1200} 
+              description="고품질 비디오 생성(Veo) 기술이 사용됩니다. 영상의 길이는 보통 5~6초이며, 유료 티어 계정에서 가장 안정적으로 작동합니다." 
+            />
+          </div>
         </div>
         <p className="text-zinc-400">프롬프트를 입력하면 Veo 모델이 멋진 동영상을 만들어냅니다.</p>
       </div>

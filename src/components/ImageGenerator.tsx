@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
 import { Loader2, Image as ImageIcon, Key, Download, Sparkles } from 'lucide-react';
 import { getApiKey } from '../utils/apiKey';
+import CostInfo from './CostInfo';
 
 export default function ImageGenerator() {
   const [topic, setTopic] = useState('');
@@ -188,11 +189,19 @@ export default function ImageGenerator() {
   return (
     <div className="space-y-8">
       <div>
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex flex-wrap items-center gap-3 mb-2">
           <h2 className="text-3xl font-bold text-white">이미지 생성</h2>
-          <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
-            무료 API Key 사용 가능
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
+              무료 API Key 사용 가능
+            </span>
+            <CostInfo 
+              featureName="이미지 생성" 
+              minCost={40} 
+              maxCost={80} 
+              description="1장의 인공지능 이미지(Imagen 3) 생성과 텍스트 기획(Gemini 2.0 Flash) 비용이 포함됩니다." 
+            />
+          </div>
         </div>
         <p className="text-zinc-400">주제와 내용을 입력하면 한국어 텍스트가 포함된 매력적인 이미지를 생성합니다.</p>
       </div>
