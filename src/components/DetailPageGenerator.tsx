@@ -84,12 +84,12 @@ export default function DetailPageGenerator() {
 메인 색상: ${colorPalette}
 상세페이지 분량(장수): ${pageCount === 'Auto' ? 'AI가 내용에 맞게 자동으로 적절한 장수를 결정' : pageCount}
 
-위 내용을 바탕으로 이커머스/랜딩페이지용 '상세페이지' 이미지를 생성해주세요.
-[매우 중요] 이미지 내의 모든 텍스트는 '한국어'로 작성되어야 하며, 글씨가 깨지거나 뭉개지지 않고 명확하고 세련된 타이포그래피로 렌더링되어야 합니다.
+위 내용을 바탕으로 이커머스/랜딩페이지용 '상세페이지' 이미지를 "나노바나나2(Nanobanana 2)" 스타일로 생성해주세요.
+[매우 중요] 이미지 내의 모든 텍스트는 반드시 '한국어(Korean)'로 작성되어야 하며, 글씨가 깨지거나 뭉개지지 않고 명확하고 세련된 타이포그래피(Korean Typography)로 렌더링되어야 합니다.
 제품명 "${productName}"과 핵심 소구점들이 레이아웃 흐름(${layoutStyle})에 맞게 시각적으로 아름답게 배치된 프로페셔널한 웹 디자인을 만들어주세요.`;
 
       const response = await ai.models.generateContent({
-        model: 'imagen-3-fast',
+        model: 'imagen-3',
         contents: prompt,
         config: {
           imageConfig: {
@@ -130,13 +130,13 @@ export default function DetailPageGenerator() {
           <h2 className="text-3xl font-bold text-white">상세페이지 생성</h2>
           <div className="flex items-center gap-2">
             <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
-              무료 API Key 사용 가능
+              나노바나나2 엔진 적용
             </span>
             <CostInfo 
               featureName="상세페이지 생성" 
-              minCost={50} 
-              maxCost={150} 
-              description="텍스트 기획 및 레이아웃 구성(Gemini 2.0 Flash)과 1장의 고해상도 상세페이지 이미지(Imagen 3) 생성 비용이 포함됩니다." 
+              minCost={100} 
+              maxCost={250} 
+              description="텍스트 기획 및 레이아웃 구성(Gemini 2.0 Flash)과 1장의 고해상도 상세페이지 이미지(나노바나나2 - Imagen 3) 생성 비용이 포함됩니다." 
             />
           </div>
         </div>

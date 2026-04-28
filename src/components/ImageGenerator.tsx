@@ -120,12 +120,12 @@ export default function ImageGenerator() {
 분위기: ${mood}
 조명: ${lighting}
 
-위 주제와 내용을 바탕으로 고품질 이미지를 생성해주세요. 
-이미지 안에는 반드시 내용과 관련된 '한국어 텍스트'가 크고 명확하게 포함되어야 합니다. 
+위 주제와 내용을 바탕으로 "나노바나나2(Nanobanana 2)" 스타일의 고품질 이미지를 생성해주세요. 
+[매리 중요] 이미지 안에는 반드시 내용과 관련된 '한국어 텍스트(Korean Text)'가 크고 명확하게 포함되어야 하며, 타이포그래피가 깨지거나 뭉개지지 않아야 합니다. 
 지정된 화풍(${artStyle}), 색감(${colorPalette}), 분위기(${mood}), 조명(${lighting})을 엄격하게 반영하여 세련되고 매력적인 스타일로 만들어주세요.`;
 
       const response = await ai.models.generateContent({
-        model: 'imagen-3-fast',
+        model: 'imagen-3',
         contents: prompt,
         config: {
           imageConfig: {
@@ -193,13 +193,13 @@ export default function ImageGenerator() {
           <h2 className="text-3xl font-bold text-white">이미지 생성</h2>
           <div className="flex items-center gap-2">
             <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold tracking-tight">
-              무료 API Key 사용 가능
+              나노바나나2 엔진 적용
             </span>
             <CostInfo 
               featureName="이미지 생성" 
               minCost={40} 
               maxCost={80} 
-              description="1장의 인공지능 이미지(Imagen 3) 생성과 텍스트 기획(Gemini 2.0 Flash) 비용이 포함됩니다." 
+              description="1장의 인공지능 이미지(나노바나나2 - Imagen 3) 생성과 텍스트 기획(Gemini 2.0 Flash) 비용이 포함됩니다." 
             />
           </div>
         </div>
