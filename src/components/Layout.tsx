@@ -307,10 +307,6 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
             <div className="absolute inset-0 bg-grid opacity-60" />
             {/* Readability + bottom fade */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/50 md:via-[#050505]/40 to-transparent flex flex-col justify-end p-6 md:p-14">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 md:mb-5 rounded-full bg-white/10 border border-white/15 backdrop-blur-md w-fit">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)] animate-pulse" />
-                <span className="text-[10px] md:text-xs font-bold text-white/90 tracking-wide">최신 AI 엔진 적용 · 나노바나나2</span>
-              </div>
               <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-5">
                 <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl md:rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(168,85,247,0.6)] border border-white/20">
                   <Sparkles className="w-5 h-5 md:w-7 md:h-7 text-white" />
