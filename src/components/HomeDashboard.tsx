@@ -58,10 +58,10 @@ export default function HomeDashboard({ setActiveTab }: HomeDashboardProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 + idx * 0.1 }}
               onClick={() => setActiveTab(feature.id)}
-              className="group text-left bg-zinc-900/50 border border-white/10 hover:border-white/20 p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(0,0,0,0.5)] relative overflow-hidden"
+              className="sheen group text-left bg-zinc-900/50 border border-white/10 hover:border-white/25 p-8 rounded-3xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.7)] relative overflow-hidden"
             >
-              <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${feature.color} opacity-10 rounded-full blur-3xl group-hover:opacity-20 transition-opacity`} />
-              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} p-0.5 mb-6 shadow-lg`}>
+              <div className={`absolute -top-8 -right-8 w-40 h-40 bg-gradient-to-br ${feature.color} opacity-10 rounded-full blur-3xl group-hover:opacity-25 group-hover:scale-125 transition-all duration-500`} />
+              <div className={`relative w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} p-0.5 mb-6 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
                 <div className="w-full h-full bg-zinc-900/90 rounded-[14px] flex items-center justify-center backdrop-blur-sm">
                   <Icon className="w-7 h-7 text-white" />
                 </div>
@@ -98,33 +98,27 @@ export default function HomeDashboard({ setActiveTab }: HomeDashboardProps) {
         transition={{ delay: 0.8 }}
         className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-white/10"
       >
-        <div className="flex items-center gap-4 bg-black/20 p-6 rounded-2xl border border-white/5">
-          <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center">
-            <Zap className="w-6 h-6 text-blue-400" />
-          </div>
-          <div>
-            <h4 className="text-white font-bold">초고속 생성</h4>
-            <p className="text-zinc-500 text-sm">최신 AI 모델 적용</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-4 bg-black/20 p-6 rounded-2xl border border-white/5">
-          <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center">
-            <Shield className="w-6 h-6 text-emerald-400" />
-          </div>
-          <div>
-            <h4 className="text-white font-bold">안전한 데이터</h4>
-            <p className="text-zinc-500 text-sm">API 키 로컬 저장</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-4 bg-black/20 p-6 rounded-2xl border border-white/5">
-          <div className="w-12 h-12 bg-purple-500/10 rounded-full flex items-center justify-center">
-            <Clock className="w-6 h-6 text-purple-400" />
-          </div>
-          <div>
-            <h4 className="text-white font-bold">시간 단축</h4>
-            <p className="text-zinc-500 text-sm">자동 기획 기능 탑재</p>
-          </div>
-        </div>
+        {[
+          { icon: Zap, title: '초고속 생성', desc: '최신 AI 모델 적용', color: 'text-blue-400', bg: 'bg-blue-500/10', ring: 'hover:border-blue-500/30' },
+          { icon: Shield, title: '안전한 데이터', desc: 'API 키 로컬 저장', color: 'text-emerald-400', bg: 'bg-emerald-500/10', ring: 'hover:border-emerald-500/30' },
+          { icon: Clock, title: '시간 단축', desc: '자동 기획 기능 탑재', color: 'text-purple-400', bg: 'bg-purple-500/10', ring: 'hover:border-purple-500/30' },
+        ].map((stat) => {
+          const StatIcon = stat.icon;
+          return (
+            <div
+              key={stat.title}
+              className={`group flex items-center gap-4 bg-black/20 p-6 rounded-2xl border border-white/5 ${stat.ring} hover:bg-black/30 transition-all duration-300`}
+            >
+              <div className={`w-12 h-12 ${stat.bg} rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                <StatIcon className={`w-6 h-6 ${stat.color}`} />
+              </div>
+              <div>
+                <h4 className="text-white font-bold">{stat.title}</h4>
+                <p className="text-zinc-500 text-sm">{stat.desc}</p>
+              </div>
+            </div>
+          );
+        })}
       </motion.div>
     </div>
   );

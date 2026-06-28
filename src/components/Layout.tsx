@@ -232,6 +232,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
       </div>
 
       {/* Atmospheric Background Gradients */}
+        <div className="absolute inset-0 bg-grid bg-grid-fade opacity-50 pointer-events-none"></div>
         <div className="absolute top-0 left-1/4 w-[60%] h-[60%] bg-purple-900/20 rounded-full blur-[180px] pointer-events-none mix-blend-screen"></div>
         <div className="absolute bottom-0 right-0 w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[150px] pointer-events-none mix-blend-screen"></div>
         
@@ -294,30 +295,43 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
             </button>
           </div>
 
-          {/* Banner Image */}
-          <div className="w-full aspect-[4/3] sm:aspect-video md:aspect-[21/9] relative rounded-[1.5rem] md:rounded-[2rem] overflow-hidden mb-8 md:mb-12 border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.5)] group">
-            <div className="w-full h-full bg-gradient-to-br from-emerald-800 via-emerald-600 to-yellow-500 transition-transform duration-[2000ms] group-hover:scale-110" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-black/40 md:via-black/60 to-transparent flex flex-col justify-end p-6 md:p-14">
+          {/* Banner */}
+          <div className="sheen w-full aspect-[4/3] sm:aspect-video md:aspect-[21/9] relative rounded-[1.5rem] md:rounded-[2rem] overflow-hidden mb-8 md:mb-12 border border-white/10 shadow-[0_30px_80px_-20px_rgba(124,58,237,0.45)] group">
+            {/* Brand gradient base */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#1e1b4b] via-[#4c1d95] to-[#1e3a8a] animate-gradient transition-transform duration-[2000ms] group-hover:scale-105" />
+            {/* Glow orbs */}
+            <div className="absolute -top-1/3 -left-10 w-2/3 h-full bg-purple-500/30 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
+            <div className="absolute -bottom-1/2 right-0 w-1/2 h-full bg-blue-500/25 rounded-full blur-[120px] pointer-events-none mix-blend-screen animate-float" />
+            <div className="absolute top-0 right-1/4 w-1/3 h-2/3 bg-fuchsia-500/20 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
+            {/* Grid overlay */}
+            <div className="absolute inset-0 bg-grid opacity-60" />
+            {/* Readability + bottom fade */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/50 md:via-[#050505]/40 to-transparent flex flex-col justify-end p-6 md:p-14">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 md:mb-5 rounded-full bg-white/10 border border-white/15 backdrop-blur-md w-fit">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)] animate-pulse" />
+                <span className="text-[10px] md:text-xs font-bold text-white/90 tracking-wide">최신 AI 엔진 적용 · 나노바나나2</span>
+              </div>
               <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-5">
-                <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-emerald-500 to-yellow-500 rounded-xl md:rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.6)] border border-white/20">
+                <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl md:rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(168,85,247,0.6)] border border-white/20">
                   <Sparkles className="w-5 h-5 md:w-7 md:h-7 text-white" />
                 </div>
-                <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-emerald-100 to-yellow-100 tracking-tighter drop-shadow-2xl">
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-100 to-blue-200 tracking-tighter drop-shadow-2xl">
                   혁신AI Lite
                 </h1>
               </div>
-              <p className="text-zinc-300 text-sm md:text-lg lg:text-2xl max-w-3xl leading-relaxed font-medium drop-shadow-lg tracking-tight mb-6 md:mb-8">
-                혁신AI의 기본기능을 체험해볼 수 있습니다.
+              <p className="text-zinc-200 text-sm md:text-lg lg:text-2xl max-w-3xl leading-relaxed font-medium drop-shadow-lg tracking-tight mb-6 md:mb-8">
+                블로그 · 카드뉴스 · 이미지 · 영상 · 상세페이지까지,<br className="hidden sm:block" />
+                전문가 수준의 콘텐츠를 한곳에서 만들어보세요.
               </p>
               <a
                 href="https://hyeoksinai.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center justify-center gap-2 md:gap-3 px-5 md:px-8 py-3 md:py-4 bg-gradient-to-r from-emerald-600 to-yellow-600 hover:from-emerald-500 hover:to-yellow-500 rounded-xl md:rounded-2xl text-white font-bold text-sm md:text-xl transition-all duration-300 shadow-[0_0_40px_rgba(16,185,129,0.4)] hover:shadow-[0_0_60px_rgba(16,185,129,0.6)] hover:-translate-y-1 w-full sm:w-fit text-center"
+                className="group/cta flex items-center justify-center gap-2 md:gap-3 px-5 md:px-8 py-3 md:py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 rounded-xl md:rounded-2xl text-white font-bold text-sm md:text-xl transition-all duration-300 shadow-[0_10px_40px_-8px_rgba(124,58,237,0.6)] hover:shadow-[0_14px_50px_-8px_rgba(124,58,237,0.8)] hover:-translate-y-0.5 w-full sm:w-fit text-center border border-white/10"
               >
-                <Sparkles className="w-4 h-4 md:w-6 md:h-6 text-emerald-100 group-hover:text-white transition-colors" />
+                <Sparkles className="w-4 h-4 md:w-6 md:h-6 text-purple-100 group-hover/cta:text-white transition-colors" />
                 <span className="tracking-wide">혁신 AI 플랫폼 바로가기</span>
-                <ExternalLink className="w-4 h-4 md:w-6 md:h-6 ml-1 text-emerald-100 group-hover:text-white transition-colors" />
+                <ExternalLink className="w-4 h-4 md:w-6 md:h-6 ml-1 text-purple-100 group-hover/cta:text-white group-hover/cta:translate-x-0.5 transition-all" />
               </a>
             </div>
           </div>
