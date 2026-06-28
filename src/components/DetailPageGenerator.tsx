@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
 import { Loader2, LayoutTemplate, Download, Sparkles } from 'lucide-react';
 import { getApiKey } from '../utils/apiKey';
+import { generateImage, describeError, TEXT_MODEL } from '../utils/aiClient';
 import CostInfo from './CostInfo';
 
 export default function DetailPageGenerator() {
@@ -32,7 +33,7 @@ export default function DetailPageGenerator() {
       }
       const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: TEXT_MODEL,
         contents: `제품/서비스명 "${productName}", 카테고리/주제 "${topic}"에 대한 상세페이지 기획을 작성해주세요.`,
         config: {
           responseMimeType: 'application/json',
@@ -67,57 +68,32 @@ export default function DetailPageGenerator() {
     setImageUrl(null);
 
     try {
-      const apiKey = getApiKey();
-      if (!apiKey) {
-        alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
-        setLoading(false);
-        return;
-      }
+      const prompt = `당신은 이커머스 전환율을 극대화하는 전문 상세페이지 디자이너입니다. 아래 브리프로 실제 판매 페이지에 바로 올릴 수 있는 프리미엄 세로형 상세페이지 비주얼을 디자인하세요.
 
-      const ai = new GoogleGenAI({ apiKey });
-      
-      const prompt = `주제/카테고리: ${topic}
-제품/서비스명: ${productName}
-타겟 고객: ${targetAudience}
-핵심 소구점(특장점): ${keyPoints}
-레이아웃 구성: ${layoutStyle}
-메인 색상: ${colorPalette}
-상세페이지 분량(장수): ${pageCount === 'Auto' ? 'AI가 내용에 맞게 자동으로 적절한 장수를 결정' : pageCount}
+[브리프]
+- 주제/카테고리: ${topic}
+- 제품/서비스명: ${productName}
+- 타겟 고객: ${targetAudience}
+- 핵심 소구점(특장점): ${keyPoints}
+- 레이아웃 흐름: ${layoutStyle}
+- 메인 색상: ${colorPalette}
+- 분량: ${pageCount === 'Auto' ? 'AI가 내용에 맞게 적절한 섹션 수를 결정' : pageCount}
 
-위 내용을 바탕으로 이커머스/랜딩페이지용 '상세페이지' 이미지를 "나노바나나2(Nanobanana 2)" 스타일로 생성해주세요.
-[매우 중요] 이미지 내의 모든 텍스트는 반드시 '한국어(Korean)'로 작성되어야 하며, 글씨가 깨지거나 뭉개지지 않고 명확하고 세련된 타이포그래피(Korean Typography)로 렌더링되어야 합니다.
-제품명 "${productName}"과 핵심 소구점들이 레이아웃 흐름(${layoutStyle})에 맞게 시각적으로 아름답게 배치된 프로페셔널한 웹 디자인을 만들어주세요.`;
+[필수 품질 기준]
+1. 세로로 긴 상세페이지 형식으로, 위에서 아래로 ${layoutStyle} 흐름에 따라 섹션을 명확히 나눠 구성합니다. 섹션 간 여백·구분·시각적 리듬을 전문 웹디자인 수준으로 정돈합니다.
+2. 모든 텍스트는 반드시 '정확하고 자연스러운 한국어'로 작성합니다. 헤드라인은 크고 강렬하게, 본문은 또렷하게 — 글자가 절대 깨지거나 뭉개지지 않고 오탈자·외계어가 없어야 합니다. 가독성 높은 모던 한글 서체를 사용합니다.
+3. 제품명 "${productName}"과 핵심 소구점을 시각적 위계에 맞게 배치하고, 신뢰감 있는 ${colorPalette} 색상 시스템과 고급스러운 아이콘/그래픽을 활용합니다.
+4. 상업 광고 수준의 디테일·정렬·대비를 적용하고, 워터마크·로렘입숨·의미 없는 텍스트·영어 자투리 글자·형태 왜곡은 금지합니다.
 
-      const response = await ai.models.generateContent({
-        model: 'imagen-3',
-        contents: prompt,
-        config: {
-          imageConfig: {
-            aspectRatio: aspectRatio,
-            imageSize: "1024"
-          }
-        }
-      });
+광고 대행사가 만든 듯한 완성도 높은 한 장의 세로형 상세페이지 이미지를 생성하세요.`;
 
-      let foundImage = false;
-      if (response.candidates?.[0]?.content?.parts) {
-        for (const part of response.candidates[0].content.parts) {
-          if (part.inlineData) {
-            const base64EncodeString = part.inlineData.data;
-            const url = `data:${part.inlineData.mimeType};base64,${base64EncodeString}`;
-            setImageUrl(url);
-            foundImage = true;
-            break;
-          }
-        }
-      }
-
-      if (!foundImage) {
-        throw new Error('이미지를 생성하지 못했습니다.');
-      }
+      // Gemini 3 Pro Image 가 지원하는 가장 긴 세로 비율(9:16)로 매핑, 4K 고해상도로 생성
+      const url = await generateImage({ prompt, aspectRatio: '9:16', imageSize: '4K' });
+      setImageUrl(url);
     } catch (error) {
       console.error('Error generating detail page:', error);
-      alert('상세페이지 생성 중 오류가 발생했습니다.');
+      const { message } = describeError(error);
+      alert(message);
     } finally {
       setLoading(false);
     }
@@ -136,7 +112,7 @@ export default function DetailPageGenerator() {
               featureName="상세페이지 생성" 
               minCost={100} 
               maxCost={250} 
-              description="텍스트 기획 및 레이아웃 구성(Gemini 2.0 Flash)과 1장의 고해상도 상세페이지 이미지(나노바나나2 - Imagen 3) 생성 비용이 포함됩니다." 
+              description="텍스트 기획 및 레이아웃 구성(Gemini 3 Flash)과 1장의 4K 고해상도 상세페이지 이미지(나노바나나2 - Gemini 3 Pro Image) 생성 비용이 포함됩니다."
             />
           </div>
         </div>

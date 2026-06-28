@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
 import { Loader2, Image as ImageIcon, Key, Download, Sparkles } from 'lucide-react';
 import { getApiKey } from '../utils/apiKey';
+import { generateImage, describeError, TEXT_MODEL } from '../utils/aiClient';
 import CostInfo from './CostInfo';
 
 export default function ImageGenerator() {
@@ -68,7 +69,7 @@ export default function ImageGenerator() {
       }
       const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: TEXT_MODEL,
         contents: `주제 "${topic}"에 어울리는 이미지 생성을 위한 프롬프트 기획을 작성해주세요.`,
         config: {
           responseMimeType: 'application/json',
@@ -103,53 +104,34 @@ export default function ImageGenerator() {
     if (!topic || !content) return;
     setLoading(true);
     setImageUrl(null);
-    
+
     try {
-      const apiKey = getApiKey();
-      if (!apiKey) {
-        alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
-        setLoading(false);
-        return;
-      }
-      const ai = new GoogleGenAI({ apiKey });
-      
-      const prompt = `주제: ${topic}
-내용: ${content}
-화풍/스타일: ${artStyle}
-색감: ${colorPalette}
-분위기: ${mood}
-조명: ${lighting}
+      const prompt = `당신은 수상 경력이 있는 상업용 그래픽 디자이너이자 아트 디렉터입니다. 아래 브리프를 바탕으로 광고/SNS에 바로 쓸 수 있는 최고 수준의 프리미엄 비주얼을 디자인하세요.
 
-위 주제와 내용을 바탕으로 "나노바나나2(Nanobanana 2)" 스타일의 고품질 이미지를 생성해주세요. 
-[매리 중요] 이미지 안에는 반드시 내용과 관련된 '한국어 텍스트(Korean Text)'가 크고 명확하게 포함되어야 하며, 타이포그래피가 깨지거나 뭉개지지 않아야 합니다. 
-지정된 화풍(${artStyle}), 색감(${colorPalette}), 분위기(${mood}), 조명(${lighting})을 엄격하게 반영하여 세련되고 매력적인 스타일로 만들어주세요.`;
+[브리프]
+- 주제: ${topic}
+- 핵심 내용/카피: ${content}
+- 화풍/스타일: ${artStyle}
+- 색감: ${colorPalette}
+- 분위기: ${mood}
+- 조명: ${lighting}
+- 비율: ${aspectRatio}
 
-      const response = await ai.models.generateContent({
-        model: 'imagen-3',
-        contents: prompt,
-        config: {
-          imageConfig: {
-            aspectRatio: aspectRatio,
-            imageSize: "1024",
-          }
-        }
-      });
+[필수 품질 기준]
+1. 상업 광고 퀄리티: 정교한 디테일, 또렷한 초점, 자연스러운 그림자와 질감, 전문적인 구도(여백·시선 흐름·황금비)를 적용해 무료 도구로 만든 듯한 어색함이 전혀 없도록 합니다.
+2. 한국어 타이포그래피: 이미지 안에는 핵심 카피를 반드시 '정확하고 자연스러운 한국어'로 크고 선명하게 배치합니다. 글자는 절대 깨지거나 뭉개지지 않아야 하며, 오탈자·외계어·왜곡된 글자가 없어야 합니다. 가독성 높은 모던 산세리프 또는 주제에 어울리는 세련된 서체를 사용하고, 배경과 충분한 대비를 줍니다.
+3. 스타일 일관성: 지정된 화풍(${artStyle}), 색감(${colorPalette}), 분위기(${mood}), 조명(${lighting})을 일관되고 정확하게 반영합니다.
+4. 금지: 워터마크, 로렘입숨, 의미 없는 텍스트, 영어 자투리 글자, 어색한 합성, 비현실적인 손가락/형태 왜곡.
 
-      for (const part of response.candidates?.[0]?.content?.parts || []) {
-        if (part.inlineData) {
-          const base64 = part.inlineData.data;
-          setImageUrl(`data:image/jpeg;base64,${base64}`);
-          break;
-        }
-      }
+광고 대행사 결과물 수준의 완성도로, 텍스트와 그래픽이 조화롭게 어우러진 한 장의 이미지를 생성하세요.`;
+
+      const url = await generateImage({ prompt, aspectRatio, imageSize: '2K' });
+      setImageUrl(url);
     } catch (error: any) {
       console.error('Error generating image:', error);
-      if (error.message?.includes('Requested entity was not found')) {
-        alert('API 키 오류. 다시 선택해주세요.');
-        setHasKey(false);
-      } else {
-        alert('이미지 생성 중 오류가 발생했습니다.');
-      }
+      const { message, isApiKeyIssue } = describeError(error);
+      if (isApiKeyIssue) setHasKey(false);
+      alert(message);
     } finally {
       setLoading(false);
     }
@@ -199,7 +181,7 @@ export default function ImageGenerator() {
               featureName="이미지 생성" 
               minCost={40} 
               maxCost={80} 
-              description="1장의 인공지능 이미지(나노바나나2 - Imagen 3) 생성과 텍스트 기획(Gemini 2.0 Flash) 비용이 포함됩니다." 
+              description="1장의 고품질 인공지능 이미지(나노바나나2 - Gemini 3 Pro Image, 2K) 생성과 텍스트 기획(Gemini 3 Flash) 비용이 포함됩니다."
             />
           </div>
         </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
 import { Loader2, Send, Image as ImageIcon, Sparkles, Download, Zap } from 'lucide-react';
 import { getApiKey } from '../utils/apiKey';
+import { generateImage, describeError, TEXT_MODEL } from '../utils/aiClient';
 import JSZip from 'jszip';
 import CostInfo from './CostInfo';
 
@@ -40,7 +41,7 @@ export default function CardNewsGenerator() {
       }
       const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: TEXT_MODEL,
         contents: `주제 "${topic}"에 대한 카드뉴스 기획을 작성해주세요.`,
         config: {
           responseMimeType: 'application/json',
@@ -88,8 +89,8 @@ ${pageCount === 0 ? "분량은 주제의 깊이에 맞게 최적의 장수(보�
 각 장마다 다음 내용을 포함해야 합니다:
 1. title: 카드뉴스 이미지 정중앙에 크게 들어갈 핵심 문구 (한국어, 짧고 강렬하게)
 2. content: 게시글 본문에 들어갈 상세 설명
-3. imagePrompt: 이미지 생성 AI를 위한 영문 프롬프트. 
-   [중요] 반드시 다음 형식을 따르세요: "A high quality background image of [배경 묘사]. The visual style MUST be ${designStyle}. The image MUST contain the exact Korean text '[title 내용]' written in large, clear, modern typography. DO NOT include any English text."
+3. imagePrompt: 이미지 생성 AI를 위한 상세한 영문 프롬프트.
+   [중요] 반드시 다음 형식을 따르세요: "Premium, professional commercial-grade social media card design with rich detail and polished composition. Background: [배경을 구체적으로 묘사 - 피사체, 구도, 질감, 분위기]. Visual style: ${designStyle}, magazine-quality, sharp focus, balanced negative space. The image MUST prominently feature the exact Korean text '[title 내용]' rendered in large, crisp, perfectly legible modern Korean typography with strong contrast against the background. The Korean letters must be accurate and never broken, garbled, or misspelled. No English text, no watermark, no gibberish text."
 `;
 
       const apiKey = getApiKey();
@@ -100,7 +101,7 @@ ${pageCount === 0 ? "분량은 주제의 깊이에 맞게 최적의 장수(보�
       }
       const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: TEXT_MODEL,
         contents: prompt,
         config: {
           responseMimeType: 'application/json',
@@ -134,42 +135,31 @@ ${pageCount === 0 ? "분량은 주제의 깊이에 맞게 최적의 장수(보�
     setLoadingImages(true);
 
     try {
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
+        setLoadingImages(false);
+        return;
+      }
+
       const updatedCards = [...cards];
-      
+
       for (let i = 0; i < updatedCards.length; i++) {
         const card = updatedCards[i];
         if (card.imageUrl) continue;
 
-        const apiKey = getApiKey();
-        if (!apiKey) {
-          alert('API 키가 설정되지 않았습니다. 우측 상단에서 API 키를 설정해주세요.');
-          setLoadingImages(false);
-          return;
-        }
-        const ai = new GoogleGenAI({ apiKey });
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash-image',
-          contents: card.imagePrompt,
-          config: {
-            imageConfig: {
-              aspectRatio: aspectRatio,
-              imageSize: '1K',
-            }
-          }
+        const url = await generateImage({
+          prompt: card.imagePrompt,
+          aspectRatio,
+          imageSize: '2K',
         });
-
-        for (const part of response.candidates?.[0]?.content?.parts || []) {
-          if (part.inlineData) {
-            const base64 = part.inlineData.data;
-            updatedCards[i].imageUrl = `data:image/jpeg;base64,${base64}`;
-            setCards([...updatedCards]);
-            break;
-          }
-        }
+        updatedCards[i].imageUrl = url;
+        setCards([...updatedCards]);
       }
     } catch (error) {
       console.error('Error generating images:', error);
-      alert('이미지 생성 중 오류가 발생했습니다.');
+      const { message } = describeError(error);
+      alert(message);
     } finally {
       setLoadingImages(false);
     }
@@ -195,8 +185,8 @@ ${pageCount === 0 ? "분량은 주제의 깊이에 맞게 최적의 장수(보�
 각 장마다 다음 내용을 포함해야 합니다:
 1. title: 카드뉴스 이미지 정중앙에 크게 들어갈 핵심 문구 (한국어, 짧고 강렬하게)
 2. content: 게시글 본문에 들어갈 상세 설명
-3. imagePrompt: 이미지 생성 AI를 위한 영문 프롬프트. 
-   [중요] 반드시 다음 형식을 따르세요: "A high quality background image of [배경 묘사]. The visual style MUST be ${designStyle}. The image MUST contain the exact Korean text '[title 내용]' written in large, clear, modern typography. DO NOT include any English text."
+3. imagePrompt: 이미지 생성 AI를 위한 상세한 영문 프롬프트.
+   [중요] 반드시 다음 형식을 따르세요: "Premium, professional commercial-grade social media card design with rich detail and polished composition. Background: [배경을 구체적으로 묘사 - 피사체, 구도, 질감, 분위기]. Visual style: ${designStyle}, magazine-quality, sharp focus, balanced negative space. The image MUST prominently feature the exact Korean text '[title 내용]' rendered in large, crisp, perfectly legible modern Korean typography with strong contrast against the background. The Korean letters must be accurate and never broken, garbled, or misspelled. No English text, no watermark, no gibberish text."
 `;
 
       const apiKey = getApiKey();
@@ -207,7 +197,7 @@ ${pageCount === 0 ? "분량은 주제의 깊이에 맞게 최적의 장수(보�
       }
       const ai = new GoogleGenAI({ apiKey });
       const textResponse = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: TEXT_MODEL,
         contents: prompt,
         config: {
           responseMimeType: 'application/json',
@@ -234,34 +224,22 @@ ${pageCount === 0 ? "분량은 주제의 깊이에 맞게 최적의 장수(보�
       if (generatedCards.length > 0) {
         setLoadingImages(true);
         const updatedCards = [...generatedCards];
-        
+
         for (let i = 0; i < updatedCards.length; i++) {
           const card = updatedCards[i];
-          const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash-image',
-            contents: card.imagePrompt,
-            config: {
-              imageConfig: {
-                aspectRatio: aspectRatio,
-                imageSize: '1K',
-              }
-            }
+          updatedCards[i].imageUrl = await generateImage({
+            prompt: card.imagePrompt,
+            aspectRatio,
+            imageSize: '2K',
           });
-
-          for (const part of response.candidates?.[0]?.content?.parts || []) {
-            if (part.inlineData) {
-              const base64 = part.inlineData.data;
-              updatedCards[i].imageUrl = `data:image/jpeg;base64,${base64}`;
-              setCards([...updatedCards]);
-              break;
-            }
-          }
+          setCards([...updatedCards]);
         }
         setLoadingImages(false);
       }
     } catch (error) {
       console.error('Error in one-click generate:', error);
-      alert('생성 중 오류가 발생했습니다.');
+      const { message } = describeError(error);
+      alert(message);
       setLoading(false);
       setLoadingImages(false);
     }
@@ -305,7 +283,7 @@ ${pageCount === 0 ? "분량은 주제의 깊이에 맞게 최적의 장수(보�
               featureName="카드뉴스 생성" 
               minCost={100} 
               maxCost={600} 
-              description="텍스트 생성(Gemini)과 여러 장의 배경 이미지(Imagen 3) 생성 비용이 합산됩니다. 장수가 많을수록 비용이 증가합니다." 
+              description="텍스트 생성(Gemini 3 Flash)과 여러 장의 고품질 배경 이미지(나노바나나2 - Gemini 3 Pro Image, 2K) 생성 비용이 합산됩니다. 장수가 많을수록 비용이 증가합니다."
             />
           </div>
         </div>
